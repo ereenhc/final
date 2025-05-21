@@ -112,13 +112,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       background-color: #da6d23;
     }
 
-    .error, .success {
+    .success, .error {
       background-color: <?= isset($error) ? 'rgb(255, 35, 35)' : 'rgb(24, 200, 24)' ?>;
-      color: #000;
-      padding: 10px;
-      border-radius: 6px;
+      color: <?= $theme === 'dark' ? '#fff' : '#000' ?>;
+      padding: 15px 20px;
+      border-left: 8px solid <?= isset($error) ? 'rgb(200, 0, 0)' : 'rgb(10, 160, 10)' ?>;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 500;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
       text-align: center;
-      margin-bottom: 15px;
+      margin-bottom: 20px;
+      animation: fadein 0.5s ease-in-out;
+    }
+
+    @keyframes fadein {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
     }
   </style>
 </head>
@@ -129,7 +139,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <?php if (!empty($error)): ?>
       <div class="error"><?= htmlspecialchars($error) ?></div>
     <?php elseif (!empty($success)): ?>
-      <div class="success"><?= htmlspecialchars($success) ?></div>
+      <div class="success">
+        <?= htmlspecialchars($success) ?><br>
+        <small><?= $language === 'tr' ? 'Lütfen bekleyiniz, yönlendiriliyorsunuz...' : 'Please wait, redirecting...' ?></small>
+      </div>
     <?php endif; ?>
 
     <form action="reset_password.php" method="post">
