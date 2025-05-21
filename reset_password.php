@@ -34,7 +34,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $stmt->bind_param("s", $token);
             $stmt->execute();
 
-            $success = $language === 'tr' ? "Şifreniz başarıyla güncellendi. Ana sayfaya yönlendiriliyorsunuz..." : "Your password has been updated successfully. Redirecting to homepage...";
+            $success = $language === 'tr' ? "Şifreniz başariyla güncellendi. Ana sayfaya yönlendiriliyorsunuz..." : "Your password has been updated successfully. Redirecting to homepage...";
             header("Refresh: 3; url=anaSayfa.php");
         }
     }
@@ -54,6 +54,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 ?>
 
 <!DOCTYPE html>
+<meta charset="UTF-8">
 <html lang="<?= $language ?>">
 <head>
   <meta charset="UTF-8">
