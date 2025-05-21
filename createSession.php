@@ -19,6 +19,8 @@ function generateSessionCode($length = 6)
     return $code;
 }
 
+$sessionCode = null;
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $chatwall = isset($_POST['chatwall']) ? 1 : 0;
     $quiz = isset($_POST['quiz']) ? 1 : 0;
@@ -39,12 +41,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 ?>
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="tr">
 
 <head>
-    <meta charset="UTF-8">
+    <meta charset="UTF-8" />
     <title>Oturum Oluştur</title>
     <style>
+        /* CSS burada tam senin verdiğin şekilde */
         body {
             font-family: Arial, sans-serif;
             background: #faebd7;
@@ -71,8 +74,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         .logo-button {
             display: inline-block;
             background-color: rgba(244, 124, 44, 0.82);
-
-            /* Buton rengi */
             color: whitesmoke;
             padding: 5px 10px;
             margin-left: 10px;
@@ -123,7 +124,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             flex-grow: 1;
             padding: 40px;
             margin-right: 270px;
-            margin-left: 270px
+            margin-left: 270px;
         }
 
         .container {
@@ -184,7 +185,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             color: #0056b3;
         }
 
-
         .button {
             display: block;
             margin: 30px auto 0;
@@ -233,7 +233,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <body>
     <div class="sidebar">
         <div class="logo">
-            <img src="https://cdn.creazilla.com/emojis/49577/monkey-emoji-clipart-xl.png" width="55px" height="55px" class="logo-icon" style="margin-left: 7px; margin-bottom: 50px;" />
+            <img src="https://cdn.creazilla.com/emojis/49577/monkey-emoji-clipart-xl.png" width="55px" height="55px"
+                class="logo-icon" style="margin-left: 7px; margin-bottom: 50px;" />
             <a href="anasayfa.php" class="logo-button" style="margin-bottom: 50px;">QuestionLive</a>
         </div>
 
@@ -259,11 +260,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <div class="main-container">
         <div class="container">
             <h1 style="font-size: 185%;">ÖZELLİKLERİ SEÇİN</h1>
-            <p>Tüm özellikler devre dışıdır. Neyi etkinleştireceğinizi seçebilir ve daha sonra "Başlamama izin ver!" düğmesiyle başlayabilirsiniz. Özellikler ayrıca oturum sırasında etkinleştirilebilir/devre dışı bırakılabilir.:</p>
+            <p>Tüm özellikler devre dışıdır. Neyi etkinleştireceğinizi seçebilir ve daha sonra "Başlamama izin ver!" düğmesiyle başlayabilirsiniz.
+                Özellikler ayrıca oturum sırasında etkinleştirilebilir/devre dışı bırakılabilir.:</p>
 
             <form method="post">
                 <div class="feature">
-                    <input type="checkbox" id="chatwall" name="chatwall">
+                    <input type="checkbox" id="chatwall" name="chatwall" />
                     <div>
                         <h3 style="font-size: 160%;">Chatwall</h3>
                         <p>Katılımcıların oturum sırasında konuşmacıya soru yöneltmelerine olanak tanır. Katılımcılar hangi katkıların kendileri için özellikle önemli olduğuna karar verirler.</p>
@@ -271,7 +273,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </div>
 
                 <div class="feature">
-                    <input type="checkbox" id="quiz" name="quiz">
+                    <input type="checkbox" id="quiz" name="quiz" />
                     <div>
                         <h3 style="font-size: 160%;">Quiz</h3>
                         <p>Konuşmacının izleyicilere tek seçenekli bir soru yöneltmesini sağlar. Daha sonra katılımcılar bir cevap seçeneği belirleyebilirler.</p>
@@ -279,7 +281,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </div>
 
                 <div class="feature">
-                    <input type="checkbox" id="panic" name="panic">
+                    <input type="checkbox" id="panic" name="panic" />
                     <div>
                         <h3 style="font-size: 160%;">Panic-Buttons</h3>
                         <p>Katılımcılar "çok hızlı", "lütfen örnek verin" vb. gibi konuları iletebilirler.</p>
@@ -289,7 +291,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <button type="submit" class="button">Oturumu Başlat</button>
             </form>
 
-            <?php if ($_SERVER['REQUEST_METHOD'] === 'POST'): ?>
+            <?php if ($sessionCode !== null): ?>
                 <div class="code-box">
                     Oturum Kodu: <?php echo htmlspecialchars($sessionCode); ?>
                 </div>
