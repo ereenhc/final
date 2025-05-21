@@ -36,7 +36,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $stmt->bind_param("s", $token);
     $stmt->execute();
 
-    echo "Şifreniz başarıyla güncellendi.";
+    echo "Şifreniz başarıyla güncellendi. Ana sayfaya yönlendiriliyorsunuz...";
+    header("Refresh: 3; url=anasayfa.php");
     exit;
 }
 
@@ -131,8 +132,8 @@ if ($data['expires'] < date("U")) {
     <form action="reset_password.php" method="post">
         <h2>Yeni Şifre Belirle</h2>
         <input type="hidden" name="token" value="<?php echo htmlspecialchars($token); ?>">
-        <input type="password" name="new_password" placeholder="Yeni sifre" required>
-        <input type="password" name="confirm_password" placeholder="Yeni sifre (tekrar)" required>
+        <input type="password" name="new_password" placeholder="Yeni şifre" required>
+        <input type="password" name="confirm_password" placeholder="Yeni şifre (tekrar)" required>
         <button type="submit">Şifreyi Sıfırla</button>
     </form>
 </body>
