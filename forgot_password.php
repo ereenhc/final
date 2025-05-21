@@ -51,10 +51,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             $mail->isHTML(false);
             $mail->Subject = 'Sifre Sifirlama Talebi';
-            $mail->Body    = "Merhaba, sifrenizi sifirlamak icin asagidaki linke tiklayin:\n\n" . $resetLink;
+            $mail->Body    = "Merhaba, sifrenizi sifirlamak icin asagidaki linke tiklayin :\n\n" . $resetLink;
 
             $mail->send();
-            $message = "Sifre sifirlama linki e-posta adresinize gonderildi.";
+            $message = "Sifre sifirlama linki e-posta adresinize gonderildi, mail gözükmüyor ise lütfen spam kutusunu kontrol edin.";
         } catch (Exception $e) {
             $message = "Mail gonderilemedi: {$mail->ErrorInfo}";
         }
@@ -173,7 +173,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
         <?php endif; ?>
 
-        <a href="login.php">Giris Sayfasina Don</a>
+        <a href="uyeGiris.php">Giris Sayfasina Don</a>
     </div>
 </body>
 
