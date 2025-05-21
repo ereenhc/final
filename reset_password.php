@@ -1,140 +1,143 @@
 <?php
+session_start();
 require_once("connection.php");
 
+$language = isset($_SESSION['language']) ? $_SESSION['language'] : 'tr';
+$theme = isset($_SESSION['theme']) ? $_SESSION['theme'] : 'dark';
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Şifre sıfırlama işlemi
     $new_password = $_POST['new_password'];
     $confirm_password = $_POST['confirm_password'];
     $token = $_POST['token'];
 
     if ($new_password !== $confirm_password) {
-        die("Şifreler uyuşmuyor.");
-    }
+        $error = $language === 'tr' ? "Şifreler uyuşmuyor." : "Passwords do not match.";
+    } else {
+        $stmt = $conn->prepare("SELECT uye_id FROM password_resets WHERE token = ? AND expires > ?");
+        $now = date("U");
+        $stmt->bind_param("si", $token, $now);
+        $stmt->execute();
+        $result = $stmt->get_result();
 
-    // Token geçerli mi?
-    $stmt = $conn->prepare("SELECT uye_id FROM password_resets WHERE token = ? AND expires > ?");
-    $now = date("U");
-    $stmt->bind_param("si", $token, $now);
+        if ($result->num_rows === 0) {
+            $error = $language === 'tr' ? "Token geçersiz veya süresi dolmuş." : "Token is invalid or expired.";
+        } else {
+            $data = $result->fetch_assoc();
+            $uye_id = $data['uye_id'];
+
+            $password_hash = password_hash($new_password, PASSWORD_DEFAULT);
+            $stmt = $conn->prepare("UPDATE uyeler SET uye_sifre = ? WHERE uye_id = ?");
+            $stmt->bind_param("si", $password_hash, $uye_id);
+            $stmt->execute();
+
+            $stmt = $conn->prepare("DELETE FROM password_resets WHERE token = ?");
+            $stmt->bind_param("s", $token);
+            $stmt->execute();
+
+            $success = $language === 'tr' ? "Şifreniz başarıyla güncellendi. Ana sayfaya yönlendiriliyorsunuz..." : "Your password has been updated successfully. Redirecting to homepage...";
+            header("Refresh: 3; url=anaSayfa.php");
+        }
+    }
+} elseif (!isset($_GET['token'])) {
+    die("Geçersiz istek.");
+} else {
+    $token = $_GET['token'];
+    $stmt = $conn->prepare("SELECT uye_id, expires FROM password_resets WHERE token = ?");
+    $stmt->bind_param("s", $token);
     $stmt->execute();
     $result = $stmt->get_result();
 
-    if ($result->num_rows === 0) {
-        die("Token geçersiz veya süresi dolmuş.");
+    if ($result->num_rows === 0 || $result->fetch_assoc()['expires'] < date("U")) {
+        die($language === 'tr' ? "Token süresi dolmuş veya geçersiz." : "Token is expired or invalid.");
     }
-
-    $data = $result->fetch_assoc();
-    $uye_id = $data['uye_id'];
-
-    // Şifreyi güncelle
-    $password_hash = password_hash($new_password, PASSWORD_DEFAULT);
-    $stmt = $conn->prepare("UPDATE uyeler SET uye_sifre = ? WHERE uye_id = ?");
-    $stmt->bind_param("si", $password_hash, $uye_id);
-    $stmt->execute();
-
-    // Tokeni sil
-    $stmt = $conn->prepare("DELETE FROM password_resets WHERE token = ?");
-    $stmt->bind_param("s", $token);
-    $stmt->execute();
-
-    echo "Şifreniz başarıyla güncellendi. Ana sayfaya yönlendiriliyorsunuz...";
-    header("Refresh: 3; url=anasayfa.php");
-    exit;
 }
-
-// GET ile gelen token varsa forma geçilir
-if (!isset($_GET['token'])) {
-    die("Geçersiz istek.");
-}
-
-$token = $_GET['token'];
-
-$stmt = $conn->prepare("SELECT uye_id, expires FROM password_resets WHERE token = ?");
-$stmt->bind_param("s", $token);
-$stmt->execute();
-$result = $stmt->get_result();
-
-if ($result->num_rows === 0) {
-    die("Token geçersiz veya süresi dolmuş.");
-}
-
-$data = $result->fetch_assoc();
-
-if ($data['expires'] < date("U")) {
-    die("Token süresi dolmuş.");
-}
-
-// Token geçerli, formu göster
 ?>
 
 <!DOCTYPE html>
-<html lang="tr">
+<html lang="<?= $language ?>">
 <head>
-    <meta charset="UTF-8">
-    <title>Şifre Sıfırlama</title>
-    <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+  <meta charset="UTF-8">
+  <title><?= $language === 'tr' ? 'Şifre Sıfırlama' : 'Reset Password' ?></title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background-color: <?= $theme === 'dark' ? '#121212' : '#ffffe0' ?>;
+      color: <?= $theme === 'dark' ? '#fff' : '#000' ?>;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
 
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f2f2f2;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-        }
+    .reset-box {
+      background-color: <?= $theme === 'dark' ? '#1e1e1e' : '#eeeed1' ?>;
+      border: 5px solid <?= $theme === 'dark' ? '#333' : '#ccc' ?>;
+      border-radius: 35px;
+      padding: 50px;
+      width: 100%;
+      max-width: 420px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    }
 
-        form {
-            background-color: white;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-            width: 100%;
-            max-width: 400px;
-        }
+    .reset-box h2 {
+      margin-bottom: 25px;
+      color: #f47c2c;
+      text-align: center;
+    }
 
-        h2 {
-            margin-bottom: 20px;
-            text-align: center;
-            color: #333;
-        }
+    .reset-box input[type="password"] {
+      width: 94%;
+      padding: 12px;
+      margin: 10px 0;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      background-color: <?= $theme === 'dark' ? '#2a2a2a' : '#fff' ?>;
+      color: <?= $theme === 'dark' ? '#fff' : '#000' ?>;
+    }
 
-        input[type="password"] {
-            width: 100%;
-            padding: 12px;
-            margin-bottom: 15px;
-            border: 1px solid #ccc;
-            border-radius: 6px;
-            font-size: 16px;
-        }
+    .reset-box button {
+      width: 100%;
+      padding: 12px;
+      background-color: #f47c2c;
+      color: #000;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
 
-        button {
-            width: 100%;
-            padding: 12px;
-            background-color: #007BFF;
-            color: white;
-            border: none;
-            border-radius: 6px;
-            font-size: 16px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-        }
+    .reset-box button:hover {
+      background-color: #da6d23;
+    }
 
-        button:hover {
-            background-color: #0056b3;
-        }
-    </style>
+    .error, .success {
+      background-color: <?= isset($error) ? 'rgb(255, 35, 35)' : 'rgb(24, 200, 24)' ?>;
+      color: #000;
+      padding: 10px;
+      border-radius: 6px;
+      text-align: center;
+      margin-bottom: 15px;
+    }
+  </style>
 </head>
 <body>
+  <div class="reset-box">
+    <h2><?= $language === 'tr' ? 'Yeni Şifre Belirle' : 'Set New Password' ?></h2>
+
+    <?php if (!empty($error)): ?>
+      <div class="error"><?= htmlspecialchars($error) ?></div>
+    <?php elseif (!empty($success)): ?>
+      <div class="success"><?= htmlspecialchars($success) ?></div>
+    <?php endif; ?>
+
     <form action="reset_password.php" method="post">
-        <h2>Yeni Şifre Belirle</h2>
-        <input type="hidden" name="token" value="<?php echo htmlspecialchars($token); ?>">
-        <input type="password" name="new_password" placeholder="Yeni şifre" required>
-        <input type="password" name="confirm_password" placeholder="Yeni şifre (tekrar)" required>
-        <button type="submit">Şifreyi Sıfırla</button>
+      <input type="hidden" name="token" value="<?= htmlspecialchars($token) ?>">
+      <input type="password" name="new_password" placeholder="<?= $language === 'tr' ? 'Yeni şifre' : 'New Password' ?>" required>
+      <input type="password" name="confirm_password" placeholder="<?= $language === 'tr' ? 'Yeni şifre (tekrar)' : 'Confirm Password' ?>" required>
+      <button type="submit"><?= $language === 'tr' ? 'Şifreyi Sıfırla' : 'Reset Password' ?></button>
     </form>
+  </div>
 </body>
 </html>
