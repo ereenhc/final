@@ -270,7 +270,7 @@ if (isset($_SESSION["giris_basarili"]) && $_SESSION["giris_basarili"] === true) 
 </head>
 
 <body>
-
+  
   <?php if (isset($_GET['invalid']) && $_GET['invalid'] == '1'): ?>
     <script>
       window.onload = function() {
