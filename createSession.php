@@ -51,11 +51,11 @@ $conn->close();
 
 <!DOCTYPE html>
 <html lang="tr">
+
 <head>
     <meta charset="UTF-8" />
     <title>Oturum Oluştur</title>
     <style>
-        /* CSS buraya senin verdiğin şekilde yapıştırıldı */
         body {
             font-family: Arial, sans-serif;
             background: #faebd7;
@@ -64,6 +64,7 @@ $conn->close();
             display: flex;
             flex-direction: row-reverse;
         }
+
         .logo {
             display: flex;
             align-items: center;
@@ -71,11 +72,13 @@ $conn->close();
             font-weight: bold;
             color: #f47c2c;
         }
+
         .logo-icon {
             font-size: 35px;
             margin-right: 5px;
             line-height: 1;
         }
+
         .logo-button {
             display: inline-block;
             background-color: rgba(244, 124, 44, 0.82);
@@ -87,9 +90,11 @@ $conn->close();
             font-weight: bold;
             transition: background-color 0.3s;
         }
+
         .logo-button:hover {
             background-color: rgb(0, 62, 71);
         }
+
         .sidebar {
             width: 300px;
             background-color: #ffdead;
@@ -98,14 +103,17 @@ $conn->close();
             box-shadow: 2px 0 5px rgba(0, 0, 0, 0.05);
             height: 100vh;
         }
+
         .sidebar h2 {
             font-size: 24px;
             margin-bottom: 30px;
         }
+
         .sidebar ul {
             list-style: none;
             padding: 0;
         }
+
         .sidebar ul li {
             margin-bottom: 20px;
             color: #bbb;
@@ -113,17 +121,20 @@ $conn->close();
             display: flex;
             align-items: center;
         }
+
         .sidebar ul li::before {
             content: '•';
             margin-right: 8px;
             color: #bbb;
         }
+
         .main-container {
             flex-grow: 1;
             padding: 40px;
             margin-right: 270px;
             margin-left: 270px;
         }
+
         .container {
             background-color: #eee9e9;
             color: #333;
@@ -135,9 +146,11 @@ $conn->close();
             line-height: 1.6;
             box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
         }
+
         h1 {
             font-size: 26px;
         }
+
         .feature {
             border: 2px solid #ccc;
             border-radius: 10px;
@@ -146,13 +159,16 @@ $conn->close();
             padding: 20px;
             background-color: #fafafa;
         }
+
         .feature input {
             margin-right: 30px;
             transform: scale(2);
         }
+
         .feature h3 {
             margin: 0 0 5px 0;
         }
+
         .code-box {
             margin-top: 40px;
             padding: 20px;
@@ -164,6 +180,7 @@ $conn->close();
             border-radius: 8px;
             color: #333;
         }
+
         a {
             display: block;
             margin-bottom: 15px;
@@ -171,9 +188,11 @@ $conn->close();
             text-decoration: none;
             font-size: 30px;
         }
+
         a:hover {
             color: #0056b3;
         }
+
         .button {
             display: block;
             margin: 30px auto 0;
@@ -185,34 +204,41 @@ $conn->close();
             font-size: 16px;
             cursor: pointer;
         }
+
         .end-button {
             background-color: #d9534f;
             margin-top: 20px;
         }
+
         .menu {
             width: 100%;
             border-collapse: collapse;
         }
+
         .menu td {
             padding: 10px;
         }
+
         .menu a {
             display: block;
             width: 100%;
             padding: 12px;
             text-align: left;
             border: 3px solid #ccc;
+            border-radius: 10px;
             text-decoration: none;
             background-color: #fff;
             font-weight: bold;
             box-sizing: border-box;
             margin-bottom: 3px;
         }
+
         .menu a:hover {
             background-color: #e0e0e0;
         }
     </style>
 </head>
+
 <body>
     <div class="sidebar">
         <div class="logo">
@@ -222,47 +248,56 @@ $conn->close();
 
         <div class="menu">
             <table class="menu">
-                <tr><td><a href="#">💬 Chatwall</a></td></tr>
-                <tr><td><a href="#">❔ Quiz</a></td></tr>
-                <tr><td><a href="#">❕ Panic</a></td></tr>
-                <tr><td><a href="#">🎓 Session</a></td></tr>
+                <tr>
+                    <td><a href="chatwall.php">💬 Chatwall</a></td>
+                </tr>
+                <tr>
+                    <td><a href="#">❔ Quiz</a></td>
+                </tr>
+                <tr>
+                    <td><a href="#">❕ Panic</a></td>
+                </tr>
+                <tr>
+                    <td><a href="createSession.php">🎓 Session</a></td>
+                </tr>
             </table>
         </div>
     </div>
 
     <div class="main-container">
-        <div class="container">
-            <h1 style="font-size: 185%;">ÖZELLİKLERİ SEÇİN</h1>
-            <p>Tüm özellikler devre dışıdır. Neyi etkinleştireceğinizi seçebilir ve daha sonra "Başlamama izin ver!" düğmesiyle başlayabilirsiniz.</p>
+        <?php if ($sessionCode === null): ?>
+            <div class="container">
+                <h1 style="font-size: 185%;">ÖZELLİKLERİ SEÇİN</h1>
+                <p>Tüm özellikler devre dışıdır. Neyi etkinleştireceğinizi seçebilir ve daha sonra "Başlamama izin ver!" düğmesiyle başlayabilirsiniz.</p>
 
-            <?php if ($sessionCode === null): ?>
-            <form method="post">
-                <div class="feature">
-                    <input type="checkbox" id="chatwall" name="chatwall" />
-                    <div>
-                        <h3 style="font-size: 160%;">Chatwall</h3>
-                        <p>Katılımcıların oturum sırasında konuşmacıya soru yöneltmelerine olanak tanır.</p>
+
+                <form method="post">
+                    <div class="feature">
+                        <input type="checkbox" id="chatwall" name="chatwall" />
+                        <div>
+                            <h3 style="font-size: 160%;">Chatwall</h3>
+                            <p>Katılımcıların oturum sırasında konuşmacıya soru yöneltmelerine olanak tanır.</p>
+                        </div>
                     </div>
-                </div>
 
-                <div class="feature">
-                    <input type="checkbox" id="quiz" name="quiz" />
-                    <div>
-                        <h3 style="font-size: 160%;">Quiz</h3>
-                        <p>Konuşmacının izleyicilere tek seçenekli bir soru yöneltmesini sağlar.</p>
+                    <div class="feature">
+                        <input type="checkbox" id="quiz" name="quiz" />
+                        <div>
+                            <h3 style="font-size: 160%;">Quiz</h3>
+                            <p>Konuşmacının izleyicilere tek seçenekli bir soru yöneltmesini sağlar.</p>
+                        </div>
                     </div>
-                </div>
 
-                <div class="feature">
-                    <input type="checkbox" id="panic" name="panic" />
-                    <div>
-                        <h3 style="font-size: 160%;">Panic-Buttons</h3>
-                        <p>Katılımcılar "çok hızlı", "lütfen örnek verin" gibi bildirimlerde bulunabilir.</p>
+                    <div class="feature">
+                        <input type="checkbox" id="panic" name="panic" />
+                        <div>
+                            <h3 style="font-size: 160%;">Panic-Buttons</h3>
+                            <p>Katılımcılar "çok hızlı", "lütfen örnek verin" gibi bildirimlerde bulunabilir.</p>
+                        </div>
                     </div>
-                </div>
 
-                <button type="submit" class="button">Oturumu Başlat</button>
-            </form>
+                    <button type="submit" class="button">Oturumu Başlat</button>
+                </form>
             <?php endif; ?>
 
             <?php if ($sessionCode !== null): ?>
@@ -274,7 +309,8 @@ $conn->close();
                     <button type="submit" class="button end-button">Oturumu Sonlandır</button>
                 </form>
             <?php endif; ?>
-        </div>
+            </div>
     </div>
 </body>
+
 </html>
