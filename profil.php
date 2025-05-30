@@ -94,7 +94,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <style>
         body {
-            background: #f5f5f5;
+            background:rgb(0, 0, 0);
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;

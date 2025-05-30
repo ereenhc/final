@@ -58,7 +58,7 @@ $conn->close();
     <style>
         body {
             font-family: Arial, sans-serif;
-            background: #faebd7;
+            background:rgb(0, 0, 0);
             margin: 0;
             padding: 0;
             display: flex;

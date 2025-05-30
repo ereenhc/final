@@ -315,7 +315,7 @@ if (isset($_SESSION["giris_basarili"]) && $_SESSION["giris_basarili"] === true) 
       </form>
       <form action="" method="post">
         <button type="submit" name="theme" value="<?= $theme === 'dark' ? 'light' : 'dark' ?>" class="theme-switch">
-          <?= $theme === 'dark' ? '🌞' : '🌙' ?>
+          <?= $theme === 'dark' ? '☀️' : '🌙' ?>
 
         </button>
       </form>
