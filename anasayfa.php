@@ -223,7 +223,7 @@ if (isset($_SESSION["giris_basarili"]) && $_SESSION["giris_basarili"] === true) 
       background-color: #4CAF50;
       /* yeşil hoşgeldin kutusu */
       color: white;
-      padding: 15px 30px;
+      padding: 18px 32px;
       border-radius: 8px;
       box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
       font-size: 18px;
@@ -364,7 +364,7 @@ if (isset($_SESSION["giris_basarili"]) && $_SESSION["giris_basarili"] === true) 
   <footer>
     <h3><?= $language === 'tr' ? 'İletişim' : 'Contact' ?></h3>
     <p><?= $language === 'tr' ? 'E-posta: destek.questionlive@gmail.com' : 'Email: destek.questionlive@gmail.com' ?></p>
-    <p><?= $language === 'tr' ? 'Telefon: +90 555 123 4567' : 'Phone: +90 555 123 4567' ?></p>
+    <p><?= $language === 'tr' ? 'Telefon: +90 550 000 0000' : 'Phone: +90 555 123 4567' ?></p>
     <p><?= $language === 'tr' ? 'Adres: İstanbul, Türkiye' : 'Address: Istanbul, Turkey' ?></p>
     <div>
 
@@ -373,7 +373,7 @@ if (isset($_SESSION["giris_basarili"]) && $_SESSION["giris_basarili"] === true) 
       </a>
 
       <a href="https://www.instagram.com/cristiano" target="_blank" style="margin-right: 20px;">
-        <i class="fab fa-instagram" style="font-size: 40px; color: #E4405F;"></i>
+        <i class="fab fa-instagram" style="font-size: 40px; color:rgb(228, 64, 64);"></i>
       </a>
 
       <a href="https://www.facebook.com/cristiano" target="_blank">
