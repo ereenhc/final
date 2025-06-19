@@ -14,14 +14,14 @@ if (!isset($_SESSION['current_session_code'])) {
 $sessionCode = $_SESSION['current_session_code'];
 
 /* chatwall yetkisini sorgula */
-$stmt = $conn->prepare("SELECT chatwall FROM sessions WHERE session_code = ?");
+$stmt = $conn->prepare("SELECT quiz FROM sessions WHERE session_code = ?");
 $stmt->bind_param("s", $sessionCode);
 $stmt->execute();
 $result = $stmt->get_result();
 
 /* Sonuç yok veya aktif değilse uyarı göster */
 if ($row = $result->fetch_assoc()) {
-    if ($row['chatwall'] != 1) {
+    if ($row['quiz'] != 1) {
         echo "<script>
                 alert('Bu özellik bu oturumda aktif değil.');
                 window.location.href = 'createSession.php';
@@ -152,7 +152,7 @@ if ($row = $result->fetch_assoc()) {
             border: 2px solid #ccc;
             overflow-y: scroll;
             padding: 20px;
-            background-color: rgb(164, 241, 255);
+            background-color: #ffdead;
             margin-bottom: 20px;
             border-radius: 5px;
         }
@@ -213,54 +213,6 @@ if ($row = $result->fetch_assoc()) {
             </table>
         </div>
     </div>
-
-    <div class="main-container">
-        <h2>Chat - Oturum: <?php echo htmlspecialchars($sessionCode); ?></h2>
-        <div id="chat-container">
-            <div id="chat-box"></div>
-            <form id="chat-form">
-                <input type="text" id="user_name" placeholder="Adınız" required>
-                <input type="text" id="message" placeholder="Mesajınız" required>
-                <button type="submit">Gönder</button>
-            </form>
-        </div>
-    </div>
-
-    <script>
-        const sessionId = "<?php echo htmlspecialchars($session_id); ?>";
-
-        function loadMessages() {
-            fetch('loadMessages.php?session_id=' + sessionId)
-                .then(res => res.text())
-                .then(data => {
-                    const box = document.getElementById('chat-box');
-                    box.innerHTML = data;
-                    box.scrollTop = box.scrollHeight;
-                });
-        }
-
-        loadMessages();
-        setInterval(loadMessages, 3000);
-
-        document.getElementById('chat-form').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const name = document.getElementById('user_name').value;
-            const msg = document.getElementById('message').value;
-
-            fetch('sendMessage.php', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                },
-                body: 'session_id=' + encodeURIComponent(sessionId) +
-                    '&user_name=' + encodeURIComponent(name) +
-                    '&message=' + encodeURIComponent(msg)
-            }).then(() => {
-                document.getElementById('message').value = '';
-                loadMessages();
-            });
-        });
-    </script>
 </body>
 
 </html>

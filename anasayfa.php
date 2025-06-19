@@ -33,13 +33,13 @@ if (isset($_SESSION["giris_basarili"]) && $_SESSION["giris_basarili"] === true) 
     body {
       margin: 0;
       font-family: 'Segoe UI', sans-serif;
-      background-color: <?= $theme === 'dark' ? '#494A4B' : '#f0f0f0' ?>;
+      background-color: <?= $theme === 'dark' ? '#363636' : '#ffffe0' ?>;
       color: <?= $theme === 'dark' ? '#fff' : '#000' ?>;
       transition: background-color 0.3s, color 0.3s;
     }
 
     header {
-      background-color: <?= $theme === 'dark' ? '#001f24' : '#fff' ?>;
+      background-color: <?= $theme === 'dark' ? '#001f24' : '#2e8b57' ?>;
       padding: 30px 50px;
       display: flex;
       justify-content: space-between;
@@ -82,25 +82,25 @@ if (isset($_SESSION["giris_basarili"]) && $_SESSION["giris_basarili"] === true) 
 
     .menu {
       display: flex;
-      gap: 15px;
+      gap: 20px;
       align-items: center;
       flex-wrap: wrap;
     }
 
     .menu input[type="text"] {
       padding: 6px 10px;
-      border: 1px solid #666;
-      border-radius: 6px;
+      border: 2px solid #666;
+      border-radius: 60px;
       background-color: <?= $theme === 'dark' ? '#2a2a2a' : '#fff' ?>;
       color: <?= $theme === 'dark' ? '#fff' : '#000' ?>;
     }
 
     .menu button {
       padding: 7px 14px;
-      border: 1px solid #f47c2c;
+      border: 2px solid #f47c2c;
       background-color: transparent;
       color: #f47c2c;
-      border-radius: 6px;
+      border-radius: 60px;
       cursor: pointer;
     }
 
@@ -144,7 +144,7 @@ if (isset($_SESSION["giris_basarili"]) && $_SESSION["giris_basarili"] === true) 
       max-width: 700px;
     }
 
-    .main .discover-btn {
+    /* .main .discover-btn {
       margin-top: 30px;
       padding: 15px 30px;
       background-color: #f47c2c;
@@ -157,7 +157,7 @@ if (isset($_SESSION["giris_basarili"]) && $_SESSION["giris_basarili"] === true) 
 
     .discover-btn:hover {
       background-color: #da6d23;
-    }
+    } */
 
     .actions {
       display: flex;
@@ -223,7 +223,7 @@ if (isset($_SESSION["giris_basarili"]) && $_SESSION["giris_basarili"] === true) 
       background-color: #4CAF50;
       /* yeşil hoşgeldin kutusu */
       color: white;
-      padding: 18px 32px;
+      padding: 15px 30px;
       border-radius: 8px;
       box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
       font-size: 18px;
@@ -237,7 +237,7 @@ if (isset($_SESSION["giris_basarili"]) && $_SESSION["giris_basarili"] === true) 
     }
 
     footer {
-      background-color: <?= $theme === 'dark' ? '#001f24' : '#fff' ?>;
+      background-color: <?= $theme === 'dark' ? '#001f24' : '#2e8b57' ?>;
       color: <?= $theme === 'dark' ? '#da6d23' : '#333' ?>;
       text-align: center;
       padding: 30px 10px;
@@ -270,7 +270,7 @@ if (isset($_SESSION["giris_basarili"]) && $_SESSION["giris_basarili"] === true) 
 </head>
 
 <body>
-  
+
   <?php if (isset($_GET['invalid']) && $_GET['invalid'] == '1'): ?>
     <script>
       window.onload = function() {
@@ -281,7 +281,7 @@ if (isset($_SESSION["giris_basarili"]) && $_SESSION["giris_basarili"] === true) 
 
   <header>
     <div class="logo">
-      <img src="https://cdn.creazilla.com/emojis/49577/monkey-emoji-clipart-xl.png" width="55px" height="55px" class="logo-icon" style="margin-left: 50px;" />
+      <img src="https://cdn.creazilla.com/emojis/49577/monkey-emoji-clipart-xl.png" width="55px" height="55px" class="logo-icon" style="margin-left: 15px;" />
       <a href="anasayfa.php" class="logo-button">QuestionLive</a>
     </div>
 
@@ -315,7 +315,7 @@ if (isset($_SESSION["giris_basarili"]) && $_SESSION["giris_basarili"] === true) 
       </form>
       <form action="" method="post">
         <button type="submit" name="theme" value="<?= $theme === 'dark' ? 'light' : 'dark' ?>" class="theme-switch">
-          <?= $theme === 'dark' ? '☀️' : '🌙' ?>
+          <?= $theme === 'dark' ? '🌞' : '🌙' ?>
 
         </button>
       </form>
@@ -325,9 +325,9 @@ if (isset($_SESSION["giris_basarili"]) && $_SESSION["giris_basarili"] === true) 
   <div class="main">
     <h1><?= $language === 'tr' ? 'Dijital Etkileşimin Yeni Boyutunu Keşfet' : 'Discover the new dimension of digital interaction' ?></h1>
     <p style="color: #f47c2c;"><?= $language === 'tr' ? 'Etkinliklerde, işletmelerde ve eğitim ortamlarında anonim geri bildirim almanın en kolay yolu.' : 'The easiest way to receive anonymous feedback at events, businesses, and educational environments.' ?></p>
-    <form action="#">
+    <!-- <form action="#">
       <button class="discover-btn" style="margin-top: 35px;"><?= $language === 'tr' ? 'Olanakları Keşfet' : 'Discover the possibilities' ?></button>
-    </form>
+    </form> -->
     <div class="actions">
       <div class="action-box">
         <h3><?= $language === 'tr' ? 'Bir Oturuma Katıl' : 'Join a Session' ?></h3>
@@ -357,14 +357,14 @@ if (isset($_SESSION["giris_basarili"]) && $_SESSION["giris_basarili"] === true) 
       toast.classList.add("show");
       setTimeout(() => {
         toast.classList.remove("show");
-      }, 3000);
+      }, 2500);
     </script>
   <?php endif; ?>
 
   <footer>
     <h3><?= $language === 'tr' ? 'İletişim' : 'Contact' ?></h3>
-    <p><?= $language === 'tr' ? 'E-posta: destek.questionlive@gmail.com' : 'Email: destek.questionlive@gmail.com' ?></p>
-    <p><?= $language === 'tr' ? 'Telefon: +90 550 000 0000' : 'Phone: +90 555 123 4567' ?></p>
+    <p><?= $language === 'tr' ? 'E-posta: destek@questionlive.com' : 'Email: destek@questionlive.com' ?></p>
+    <p><?= $language === 'tr' ? 'Telefon: +90 555 123 4567' : 'Phone: +90 555 123 4567' ?></p>
     <p><?= $language === 'tr' ? 'Adres: İstanbul, Türkiye' : 'Address: Istanbul, Turkey' ?></p>
     <div>
 
@@ -373,7 +373,7 @@ if (isset($_SESSION["giris_basarili"]) && $_SESSION["giris_basarili"] === true) 
       </a>
 
       <a href="https://www.instagram.com/cristiano" target="_blank" style="margin-right: 20px;">
-        <i class="fab fa-instagram" style="font-size: 40px; color:rgb(228, 64, 64);"></i>
+        <i class="fab fa-instagram" style="font-size: 40px; color: #E4405F;"></i>
       </a>
 
       <a href="https://www.facebook.com/cristiano" target="_blank">
