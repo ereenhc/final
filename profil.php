@@ -28,7 +28,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $yeniSoyadi = trim($_POST['uye_soyadi'] ?? '');
     $yeniMail = trim($_POST['uye_mail'] ?? '');
 
-    // Ad Soyad Mail güncelleme doğrulama
     if (empty($yeniAdi) || empty($yeniSoyadi) || empty($yeniMail)) {
         $mesaj = "Ad, Soyad ve Mail boş bırakılamaz.";
         $mesaj_turu = "error";
@@ -36,7 +35,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $mesaj = "Geçerli bir e-posta giriniz.";
         $mesaj_turu = "error";
     } else {
-        // Şifre değişikliği istenmişse kontrol et
         if ($mevcutSifre || $yeniSifre || $sifreTekrar) {
             if (!password_verify($mevcutSifre, $uye['uye_sifre'])) {
                 $mesaj = "Mevcut şifre yanlış.";
@@ -57,7 +55,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 if ($update->execute()) {
                     $mesaj = "Bilgiler ve şifre başarıyla güncellendi.";
                     $mesaj_turu = "success";
-                    // Güncel bilgileri tekrar çek
                     $uye['uye_adi'] = $yeniAdi;
                     $uye['uye_soyadi'] = $yeniSoyadi;
                     $uye['uye_mail'] = $yeniMail;
@@ -67,7 +64,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 }
             }
         } else {
-            // Şifre değişikliği yok, sadece isim mail güncelle
             $update = $conn->prepare("UPDATE uyeler SET uye_adi = ?, uye_soyadi = ?, uye_mail = ? WHERE uye_id = ?");
             $update->bind_param("sssi", $yeniAdi, $yeniSoyadi, $yeniMail, $uye_id);
             if ($update->execute()) {
@@ -87,46 +83,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 <!DOCTYPE html>
 <html lang="tr">
-
 <head>
     <meta charset="UTF-8">
     <title>Profil</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <style>
         body {
-            background:rgb(0, 0, 0);
+            background: rgb(0, 0, 0);
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
-        }
-
-        .menu {
-            display: flex;
-            gap: 15px;
-            align-items: center;
-            flex-wrap: wrap;
-        }
-
-        .menu input[type="text"] {
-            padding: 6px 10px;
-            border: 1px solid #666;
-            border-radius: 6px;
-            background-color: #fff;
-            color: #000;
-        }
-
-        .menu button {
-            padding: 7px 14px;
-            border: 1px solid #f47c2c;
-            background-color: transparent;
-            color: #f47c2c;
-            border-radius: 6px;
-            cursor: pointer;
-        }
-
-        .menu button:hover {
-            background-color: #f47c2c;
-            color: #000;
         }
 
         header {
@@ -195,7 +161,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         .container {
             max-width: 500px;
-            background: white;
+            background: #f47c2c;
             margin: 50px auto 100px;
             padding: 30px;
             border-radius: 10px;
@@ -204,7 +170,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         h2 {
             text-align: center;
-            color: #333;
+            color: #000;
         }
 
         form {
@@ -219,12 +185,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             margin-top: 8px;
             margin-bottom: 20px;
             border-radius: 6px;
-            border: 1px solid #ccc;
+            border: 1px solid #999;
             box-sizing: border-box;
         }
 
         .btn {
-            background: #3498db;
+            background: #000;
             color: white;
             padding: 10px 15px;
             border: none;
@@ -234,14 +200,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         .btn:hover {
-            background: #2980b9;
+            background: #333;
         }
 
         .login-box a {
             display: block;
             text-align: center;
             margin-top: 15px;
-            color: #f47c2c;
+            color: #000;
+            font-weight: bold;
             text-decoration: none;
         }
 
@@ -265,53 +232,50 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     </style>
 </head>
-
 <body>
 
-    <header>
-        <div class="logo">
-            <img src="https://cdn.creazilla.com/emojis/49577/monkey-emoji-clipart-xl.png" width="55px" height="55px" class="logo-icon" style="margin-left: 50px;" />
-            <a href="anasayfa.php" class="logo-button">QuestionLive</a>
-        </div>
-        <h1 style="margin-right: 250px;">Hoş Geldiniz, <?= htmlspecialchars($uye['uye_adi'] . ' ' . $uye['uye_soyadi']) ?></h1>
-        <a href="logout.php" class="logout"><i class="fas fa-sign-out-alt"></i> Çıkış Yap</a>
-    </header>
-
-    <div class="container">
-        <h2>Profil Bilgilerim</h2>
-
-        <form method="post" novalidate>
-            <label for="uye_adi">Ad:</label>
-            <input type="text" id="uye_adi" name="uye_adi" value="<?= htmlspecialchars($uye['uye_adi']) ?>" required>
-
-            <label for="uye_soyadi">Soyad:</label>
-            <input type="text" id="uye_soyadi" name="uye_soyadi" value="<?= htmlspecialchars($uye['uye_soyadi']) ?>" required>
-
-            <label for="uye_mail">E-posta:</label>
-            <input type="email" id="uye_mail" name="uye_mail" value="<?= htmlspecialchars($uye['uye_mail']) ?>" required>
-
-            <h3>Şifre Güncelle (Opsiyonel)</h3>
-            <input type="password" name="mevcut_sifre" placeholder="Mevcut şifreniz">
-            <input type="password" name="yeni_sifre" placeholder="Yeni şifre (en az 6 karakter)">
-            <input type="password" name="sifre_tekrar" placeholder="Yeni şifre (tekrar)">
-
-            <button type="submit" class="btn">Güncelle</button>
-
-            <div class="login-box">
-                <a href="anasayfa.php" style="margin-top: -25px; margin-left: 350px;">Ana Sayfaya Dön</a>
-            </div>
-
-            <?php if ($mesaj): ?>
-                <div class="message <?= $mesaj_turu ?>"><?= htmlspecialchars($mesaj) ?></div>
-            <?php endif; ?>
-        </form>
+<header>
+    <div class="logo">
+        <img src="https://cdn.creazilla.com/emojis/49577/monkey-emoji-clipart-xl.png" width="55px" height="55px" class="logo-icon" style="margin-left: 50px;" />
+        <a href="anasayfa.php" class="logo-button">QuestionLive</a>
     </div>
+    <h1 style="margin-right: 250px;">Hoş Geldiniz, <?= htmlspecialchars($uye['uye_adi'] . ' ' . $uye['uye_soyadi']) ?></h1>
+    <a href="logout.php" class="logout"><i class="fas fa-sign-out-alt"></i> Çıkış Yap</a>
+</header>
 
-    <footer>
-        &copy; <?= date("Y") ?> Tüm Hakları Saklıdır. | Canlı Geri Bildirim Sistemi
-    </footer>
+<div class="container">
+    <h2>Profil Bilgilerim</h2>
+
+    <form method="post" novalidate>
+        <label for="uye_adi">Ad:</label>
+        <input type="text" id="uye_adi" name="uye_adi" value="<?= htmlspecialchars($uye['uye_adi']) ?>" required>
+
+        <label for="uye_soyadi">Soyad:</label>
+        <input type="text" id="uye_soyadi" name="uye_soyadi" value="<?= htmlspecialchars($uye['uye_soyadi']) ?>" required>
+
+        <label for="uye_mail">E-posta:</label>
+        <input type="email" id="uye_mail" name="uye_mail" value="<?= htmlspecialchars($uye['uye_mail']) ?>" required>
+
+        <h3>Şifre Güncelle (Opsiyonel)</h3>
+        <input type="password" name="mevcut_sifre" placeholder="Mevcut şifreniz">
+        <input type="password" name="yeni_sifre" placeholder="Yeni şifre (en az 6 karakter)">
+        <input type="password" name="sifre_tekrar" placeholder="Yeni şifre (tekrar)">
+
+        <button type="submit" class="btn">Güncelle</button>
+
+        <div class="login-box">
+            <a href="anasayfa.php" style="margin-top: -25px; margin-left: 350px;">Ana Sayfaya Dön</a>
+        </div>
+
+        <?php if ($mesaj): ?>
+            <div class="message <?= $mesaj_turu ?>"><?= htmlspecialchars($mesaj) ?></div>
+        <?php endif; ?>
+    </form>
+</div>
+
+<footer>
+    &copy; <?= date("Y") ?> Tüm Hakları Saklıdır. | Canlı Geri Bildirim Sistemi
+</footer>
 
 </body>
-
 </html>
-
