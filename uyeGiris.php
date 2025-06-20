@@ -31,7 +31,14 @@ if (isset($_POST["giris"])) {
       $_SESSION["uye_soyadi"] = $user["uye_soyadi"];
       $_SESSION["uye_mail"] = $user["uye_mail"];
       $_SESSION["giris_basarili"] = true; //DENEME
-      header("Location: anaSayfa.php");
+      // ADMIN KONTROLÜ EKLENDİ
+      if (isset($user["is_admin"]) && $user["is_admin"] == 1) {
+        $_SESSION["is_admin"] = 1;
+        header("Location: moderatorPanel.php");
+      } else {
+        $_SESSION["is_admin"] = 0;
+        header("Location: anaSayfa.php");
+      }
       exit;
     } else {
       $message = $language === 'tr' ? "Şifre Hatalı!!" : "Incorrect password.";
