@@ -1,250 +1,110 @@
 <?php
-include 'connection.php';
 session_start();
+require_once("connection.php");
 
-if (!isset($_SESSION['uye_id'])) {
-    die("Giriş yapmalısınız.");
-}
+$success = false;
 
-$createdBy = $_SESSION['uye_id'];
-$session_id = $_GET['session_id'] ?? null;
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["session_code"])) {
+  $code = $_POST["session_code"];
 
-if (!$session_id) {
-    $stmt = $conn->prepare("SELECT session_code FROM sessions WHERE created_by = ? AND is_active = 1 LIMIT 1");
-    $stmt->bind_param("i", $createdBy);
-    $stmt->execute();
-    $result = $stmt->get_result();
+  // chat mesajlarını sil
+  $stmt1 = $conn->prepare("DELETE FROM sessions WHERE session_code = ?");
+  $stmt1->bind_param("s", $code);
 
-    if ($row = $result->fetch_assoc()) {
-        $session_id = $row['session_code'];
-    } else {
-        die("Aktif oturum bulunamadı.");
-    }
-    $stmt->close();
+  // session kaydını sil
+  $stmt2 = $conn->prepare("DELETE FROM sessions WHERE session_code = ?");
+  $stmt2->bind_param("s", $code);
+
+  if ($stmt1->execute() && $stmt2->execute()) {
+    $success = true;
+  } else {
+    $errorMsg = "Bir hata oluştu: " . $conn->error;
+  }
+
+  $stmt1->close();
+  $stmt2->close();
+  $conn->close();
+} else {
+  $errorMsg = "Geçersiz istek.";
 }
 ?>
+
 <!DOCTYPE html>
-<html lang="tr">
+<html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <title>ChatWall</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background:rgb(0, 0, 0);
-            margin: 0;
-            padding: 0;
-            display: flex;
-            flex-direction: row-reverse;
-        }
+  <meta charset="UTF-8">
+  <title>Session Ended</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f8f8f8;
+      margin: 0;
+      padding: 50px;
+      text-align: center;
+    }
 
-        .sidebar {
-            width: 300px;
-            background-color: #ffdead;
-            border-right: 1px solid #ddd;
-            padding: 30px 15px;
-            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.05);
-            height: 100vh;
-        }
+    .toast {
+      position: fixed;
+      top: -100px;
+      left: 50%;
+      transform: translateX(-50%);
+      min-width: 300px;
+      max-width: 90%;
+      background-color: #28a745;
+      color: white;
+      padding: 16px 20px;
+      border-radius: 8px;
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+      font-size: 17px;
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      opacity: 0;
+      transition: all 0.5s ease;
+    }
 
-        .logo {
-            display: flex;
-            align-items: center;
-            font-size: 30px;
-            font-weight: bold;
-            color: #f47c2c;
-        }
+    .toast.show {
+      top: 20px;
+      opacity: 1;
+    }
 
-        .logo-icon {
-            font-size: 35px;
-            margin-right: 5px;
-            line-height: 1;
-        }
+    .toast.error {
+      background-color: #dc3545;
+    }
 
-        .logo-button {
-            display: inline-block;
-            background-color: rgba(244, 124, 44, 0.82);
-            color: whitesmoke;
-            padding: 5px 10px;
-            margin-left: 10px;
-            text-decoration: none;
-            border-radius: 5px;
-            font-weight: bold;
-            transition: background-color 0.3s;
-        }
-
-        .logo-button:hover {
-            background-color: rgb(0, 62, 71);
-        }
-
-        .menu {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        .menu td {
-            padding: 10px;
-        }
-
-        .menu a {
-            display: block;
-            width: 100%;
-            padding: 12px;
-            text-align: left;
-            border: 3px solid #ccc;
-            border-radius: 10px;
-            text-decoration: none;
-            background-color: #fff;
-            font-weight: bold;
-            box-sizing: border-box;
-            margin-bottom: 3px;
-        }
-
-        .menu a:hover {
-            background-color: #e0e0e0;
-        }
-
-        .main-container {
-            flex-grow: 1;
-            padding: 40px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-        }
-
-        h2 {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-
-        #chat-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            width: 100%;
-        }
-
-        #chat-box {
-            width: 70%;
-            height: 500px;
-            border: 2px solid #ccc;
-            overflow-y: scroll;
-            padding: 20px;
-            background-color: #ffdead;
-            margin-bottom: 20px;
-            border-radius: 5px;
-        }
-
-        .message {
-            margin-bottom: 10px;
-        }
-
-        #chat-form {
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-            width: 65%;
-            margin-bottom: 100px;
-        }
-
-        #chat-form input {
-            padding: 10px;
-            font-size: 16px;
-            width: 30%;
-        }
-
-        #chat-form button {
-            padding: 10px 20px;
-            background-color: #5cb85c;
-            color: white;
-            border: none;
-            border-radius: 6px;
-            font-size: 16px;
-            cursor: pointer;
-
-        }
-
-        #chat-form button:hover {
-            background-color: #4cae4c;
-        }
-    </style>
+    .toast i {
+      font-style: normal;
+      font-weight: bold;
+      font-size: 22px;
+    }
+  </style>
 </head>
 
 <body>
-    <div class="sidebar">
-        <div class="logo">
-            <img src="https://cdn.creazilla.com/emojis/49577/monkey-emoji-clipart-xl.png" width="55px" height="55px" class="logo-icon" style="margin-left: 7px; margin-bottom: 50px;" />
-            <a href="anasayfa.php" class="logo-button" style="margin-bottom: 50px;">QuestionLive</a>
-        </div>
 
-        <div class="menu">
-            <table class="menu">
-                <tr>
-                    <td><a href="chatwall.php">💬 Chatwall</a></td>
-                </tr>
-                <tr>
-                    <td><a href="#">❔ Quiz</a></td>
-                </tr>
-                <tr>
-                    <td><a href="#">❕ Panic</a></td>
-                </tr>
-                <tr>
-                    <td><a href="createSession.php">🎓 Session</a></td>
-                </tr>
-            </table>
-        </div>
+  <?php if ($success): ?>
+    <div id="toast" class="toast">
+      <i>✔️</i> Ders oturumu sonlanmıştır
     </div>
-
-    <div class="main-container">
-        <h2>Chat - Oturum: <?php echo htmlspecialchars($session_id); ?></h2>
-        <div id="chat-container">
-            <div id="chat-box"></div>
-            <form id="chat-form">
-                <input type="text" id="user_name" placeholder="Adınız" required>
-                <input type="text" id="message" placeholder="Mesajınız" required>
-                <button type="submit">Gönder</button>
-            </form>
-        </div>
-    </div>
-
     <script>
-        const sessionId = "<?php echo htmlspecialchars($session_id); ?>";
+      const toast = document.getElementById("toast");
+      toast.classList.add("show");
 
-        function loadMessages() {
-            fetch('loadMessages.php?session_id=' + sessionId)
-                .then(res => res.text())
-                .then(data => {
-                    const box = document.getElementById('chat-box');
-                    box.innerHTML = data;
-                    box.scrollTop = box.scrollHeight;
-                });
-        }
+      <?php if ($success): ?>
+        setTimeout(() => {
+          toast.classList.remove("show");
+        }, 2200);
 
-        loadMessages();
-        setInterval(loadMessages, 3000);
-
-        document.getElementById('chat-form').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const name = document.getElementById('user_name').value;
-            const msg = document.getElementById('message').value;
-
-            fetch('sendMessage.php', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                },
-                body: 'session_id=' + encodeURIComponent(sessionId) +
-                    '&user_name=' + encodeURIComponent(name) +
-                    '&message=' + encodeURIComponent(msg)
-            }).then(() => {
-                document.getElementById('message').value = '';
-                loadMessages();
-            });
-        });
+        setTimeout(() => {
+          window.location.href = "anasayfa.php";
+        }, 2500);
+      <?php endif; ?>
     </script>
+
+  <?php endif; ?>
+
 </body>
 
 </html>
