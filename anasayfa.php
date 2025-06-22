@@ -1,19 +1,22 @@
 <?php
 session_start();
 $language = isset($_SESSION['language']) ? $_SESSION['language'] : 'tr';
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['language'])) {
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['language'])) 
+{
   $language = $_SESSION['language'] = $_POST['language'];
 }
 
 $theme = isset($_SESSION['theme']) ? $_SESSION['theme'] : 'dark';
-if (isset($_POST['theme'])) {
+if (isset($_POST['theme'])) 
+{
   $theme = $_SESSION['theme'] = $_POST['theme'];
 }
 ?>
 
 <?php
 $girisBasarili = false;
-if (isset($_SESSION["giris_basarili"]) && $_SESSION["giris_basarili"] === true) {
+if (isset($_SESSION["giris_basarili"]) && $_SESSION["giris_basarili"] === true) 
+{
   $girisBasarili = true;
   unset($_SESSION["giris_basarili"]);
 }
@@ -30,7 +33,8 @@ if (isset($_SESSION["giris_basarili"]) && $_SESSION["giris_basarili"] === true) 
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
   <style>
-    body {
+    body 
+    {
       margin: 0;
       font-family: 'Segoe UI', sans-serif;
       background-color: <?= $theme === 'dark' ? '#363636' : '#ffffe0' ?>;
@@ -38,7 +42,8 @@ if (isset($_SESSION["giris_basarili"]) && $_SESSION["giris_basarili"] === true) 
       transition: background-color 0.3s, color 0.3s;
     }
 
-    header {
+    header 
+    {
       background-color: <?= $theme === 'dark' ? '#001f24' : '#2e8b57' ?>;
       padding: 30px 50px;
       display: flex;
@@ -48,7 +53,8 @@ if (isset($_SESSION["giris_basarili"]) && $_SESSION["giris_basarili"] === true) 
       flex-wrap: wrap;
     }
 
-    .logo {
+    .logo 
+    {
       display: flex;
       align-items: center;
       font-size: 30px;
@@ -56,17 +62,18 @@ if (isset($_SESSION["giris_basarili"]) && $_SESSION["giris_basarili"] === true) 
       color: #f47c2c;
     }
 
-    .logo-icon {
+    .logo-icon 
+    {
       font-size: 36px;
       margin-right: 12px;
       line-height: 1;
     }
 
-    .logo-button {
+    .logo-button 
+    {
       display: inline-block;
       background-color: rgba(244, 124, 44, 0.82);
 
-      /* Buton rengi */
       color: whitesmoke;
       padding: 7.5px 20px;
       margin-left: 10px;
@@ -76,18 +83,21 @@ if (isset($_SESSION["giris_basarili"]) && $_SESSION["giris_basarili"] === true) 
       transition: background-color 0.3s;
     }
 
-    .logo-button:hover {
+    .logo-button:hover 
+    {
       background-color: rgb(0, 62, 71);
     }
 
-    .menu {
+    .menu 
+    {
       display: flex;
       gap: 20px;
       align-items: center;
       flex-wrap: wrap;
     }
 
-    .menu input[type="text"] {
+    .menu input[type="text"] 
+    {
       padding: 6px 10px;
       border: 2px solid #666;
       border-radius: 60px;
@@ -95,7 +105,8 @@ if (isset($_SESSION["giris_basarili"]) && $_SESSION["giris_basarili"] === true) 
       color: <?= $theme === 'dark' ? '#fff' : '#000' ?>;
     }
 
-    .menu button {
+    .menu button 
+    {
       padding: 7px 14px;
       border: 2px solid #f47c2c;
       background-color: transparent;
@@ -104,13 +115,15 @@ if (isset($_SESSION["giris_basarili"]) && $_SESSION["giris_basarili"] === true) 
       cursor: pointer;
     }
 
-    .menu button:hover {
+    .menu button:hover 
+    {
       background-color: #f47c2c;
       color: #000;
     }
 
     .language-switch,
-    .theme-switch {
+    .theme-switch 
+    {
       background: none;
       color: #f47c2c;
       border: none;
@@ -119,11 +132,13 @@ if (isset($_SESSION["giris_basarili"]) && $_SESSION["giris_basarili"] === true) 
     }
 
     .language-switch:hover,
-    .theme-switch:hover {
+    .theme-switch:hover 
+    {
       color: #fff;
     }
 
-    .main {
+    .main 
+    {
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -132,34 +147,22 @@ if (isset($_SESSION["giris_basarili"]) && $_SESSION["giris_basarili"] === true) 
       animation: fadeIn 1s ease-out;
     }
 
-    .main h1 {
+    .main h1 
+    {
       font-size: 36px;
       color: #f47c2c;
       margin-top: 80px;
     }
 
-    .main p {
+    .main p 
+    {
       font-size: 18px;
       color: <?= $theme === 'dark' ? '#ccc' : '#333' ?>;
       max-width: 700px;
     }
 
-    /* .main .discover-btn {
-      margin-top: 30px;
-      padding: 15px 30px;
-      background-color: #f47c2c;
-      color: #000;
-      font-size: 16px;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-    }
-
-    .discover-btn:hover {
-      background-color: #da6d23;
-    } */
-
     .actions {
+
       display: flex;
       justify-content: center;
       gap: 40px;
@@ -168,7 +171,8 @@ if (isset($_SESSION["giris_basarili"]) && $_SESSION["giris_basarili"] === true) 
       animation: fadeIn 1s ease-out;
     }
 
-    .action-box {
+    .action-box 
+    {
       background-color: <?= $theme === 'dark' ? '#1e1e1e' : '#fff' ?>;
       border: 1px solid <?= $theme === 'dark' ? '#333' : '#ccc' ?>;
       border-radius: 8px;
@@ -178,18 +182,21 @@ if (isset($_SESSION["giris_basarili"]) && $_SESSION["giris_basarili"] === true) 
       margin-bottom: 10px;
     }
 
-    .action-box h3 {
+    .action-box h3 
+    {
       margin-top: 0;
       font-size: 20px;
       color: #f47c2c;
     }
 
-    .action-box p {
+    .action-box p 
+    {
       font-size: 14px;
       color: <?= $theme === 'dark' ? '#aaa' : '#555' ?>;
     }
 
-    .action-box input[type="text"] {
+    .action-box input[type="text"] 
+    {
       width: 90%;
       padding: 8px;
       margin-top: 10px;
@@ -200,7 +207,8 @@ if (isset($_SESSION["giris_basarili"]) && $_SESSION["giris_basarili"] === true) 
       color: <?= $theme === 'dark' ? '#fff' : '#000' ?>;
     }
 
-    .action-box button {
+    .action-box button 
+    {
       width: 95%;
       padding: 10px;
       background-color: #f47c2c;
@@ -210,18 +218,18 @@ if (isset($_SESSION["giris_basarili"]) && $_SESSION["giris_basarili"] === true) 
       cursor: pointer;
     }
 
-    .action-box button:hover {
+    .action-box button:hover 
+    {
       background-color: #da6d23;
     }
 
-    .toast {
+    .toast 
+    {
       position: fixed;
       top: 30px;
-      /* sayfanın en üstünden boşluk */
       left: 50%;
       transform: translateX(-50%);
       background-color: #4CAF50;
-      /* yeşil hoşgeldin kutusu */
       color: white;
       padding: 15px 30px;
       border-radius: 8px;
@@ -232,11 +240,13 @@ if (isset($_SESSION["giris_basarili"]) && $_SESSION["giris_basarili"] === true) 
       transition: opacity 0.4s ease-in-out;
     }
 
-    .toast.show {
+    .toast.show 
+    {
       opacity: 1;
     }
 
-    footer {
+    footer 
+    {
       background-color: <?= $theme === 'dark' ? '#001f24' : '#2e8b57' ?>;
       color: <?= $theme === 'dark' ? '#da6d23' : '#333' ?>;
       text-align: center;
@@ -244,23 +254,29 @@ if (isset($_SESSION["giris_basarili"]) && $_SESSION["giris_basarili"] === true) 
       margin-top: 100px;
     }
 
-    @keyframes fadeIn {
-      from {
+    @keyframes fadeIn 
+    {
+      from 
+      {
         opacity: 0;
       }
 
-      to {
+      to 
+      {
         opacity: 1;
       }
     }
 
-    @media (max-width: 700px) {
-      .actions {
+    @media (max-width: 700px) 
+    {
+      .actions 
+      {
         flex-direction: column;
         align-items: center;
       }
 
-      header {
+      header 
+      {
         flex-direction: column;
         align-items: flex-start;
         gap: 10px;
@@ -273,7 +289,8 @@ if (isset($_SESSION["giris_basarili"]) && $_SESSION["giris_basarili"] === true) 
 
   <?php if (isset($_GET['invalid']) && $_GET['invalid'] == '1'): ?>
     <script>
-      window.onload = function() {
+      window.onload = function() 
+      {
         alert("<?= $language === 'tr' ? 'Geçersiz oturum.' : 'Invalid session.' ?>");
       };
     </script>

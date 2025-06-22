@@ -1,9 +1,11 @@
+
 <?php
 require_once "connection.php";
 
 $session_id = $_GET['session_id'] ?? null;
 
-if (!$session_id) {
+if (!$session_id) 
+{
     echo json_encode([]);
     exit;
 }
@@ -14,7 +16,8 @@ $stmt->execute();
 $result = $stmt->get_result();
 
 $messages = [];
-while ($row = $result->fetch_assoc()) {
+while ($row = $result->fetch_assoc()) 
+{
     $messages[] = $row;
 }
 

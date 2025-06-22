@@ -2,7 +2,8 @@
 session_start();
 require_once("connection.php");
 
-if (!isset($_SESSION['uye_id'])) {
+if (!isset($_SESSION['uye_id'])) 
+{
     echo "<script>alert('Oturum Başlatmak için Önce Giriş Yapmalısınız!!!'); window.location.href = 'anasayfa.php';</script>";
     exit();
 }
@@ -10,19 +11,23 @@ if (!isset($_SESSION['uye_id'])) {
 $createdBy = $_SESSION['uye_id'];
 $sessionCode = null;
 
-// Aktif oturumu kontrol et
 $checkStmt = $conn->prepare("SELECT session_code FROM sessions WHERE created_by = ? AND is_active = 1");
 $checkStmt->bind_param("i", $createdBy);
 $checkStmt->execute();
 $result = $checkStmt->get_result();
 
-if ($row = $result->fetch_assoc()) {
+if ($row = $result->fetch_assoc()) 
+{
     $sessionCode = $row['session_code'];
-} elseif ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    function generateSessionCode($length = 6) {
+}
+ elseif ($_SERVER['REQUEST_METHOD'] === 'POST') 
+{
+    function generateSessionCode($length = 6) 
+    {
         $characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
         $code = '';
-        for ($i = 0; $i < $length; $i++) {
+        for ($i = 0; $i < $length; $i++) 
+        {
             $code .= $characters[rand(0, strlen($characters) - 1)];
         }
         return $code;
@@ -33,28 +38,27 @@ if ($row = $result->fetch_assoc()) {
     $sessionCode = generateSessionCode();
     $_SESSION['current_session_code'] = $sessionCode;
 
-    $stmt = $conn->prepare(
+    $stmt = $conn->prepare
+    (
         "INSERT INTO sessions (session_code, created_by, chatwall, quiz, is_active) VALUES (?, ?, ?, ?, 1)"
     );
     $stmt->bind_param("siii", $sessionCode, $createdBy, $chatwall, $quiz);
 
-    if (!$stmt->execute()) {
+    if (!$stmt->execute()) 
+    {
         die("Veritabanına kayıt yapılamadı: " . $stmt->error);
     }
-
     $stmt->close();
 }
-
-$conn->close();
 ?>
-
 <!DOCTYPE html>
 <html lang="tr">
 <head>
     <meta charset="UTF-8" />
     <title>Oturum Oluştur</title>
     <style>
-        body {
+        body 
+        {
             height: 100%;
             margin: 0;
             padding: 0;
@@ -62,101 +66,116 @@ $conn->close();
             background: #faebd7;
             display: flex;
         }
-        .sidebar {
-    width: 390px;
-    background-color: rgb(61, 131, 184);
-    border-right: 1px solid #ddd;
-    padding: 30px 15px;
-    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.05);
-    height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-}
-.logo {
-    display: flex;
-    align-items: center;
-    font-size: 30px;
-    font-weight: bold;
-    color: #f47c2c;
-    margin-bottom: 60px;
-}
-.logo-icon {
-    font-size: 35px;
-    margin-right: 5px;
-    line-height: 1;
-}
-.logo-button {
-    display: inline-block;
-    background-color: rgba(244, 124, 44, 0.82);
-    color: whitesmoke;
-    padding: 5px 10px;
-    margin-left: 10px;
-    text-decoration: none;
-    border-radius: 5px;
-    font-weight: bold;
-    transition: background-color 0.3s;
-    font-size: 28px;
-}
-.logo-button:hover {
-    background-color: rgb(0, 62, 71);
-}
-.mod-label {
-    color: #14234B;
-    font-weight: bold;
-    font-size: 1em;
-    margin-left: 16px;
-    background: #d6e4ff;
-    padding: 4px 14px;
-    border-radius: 8px;
-    letter-spacing: 1px;
-}
-.menu {
-    width: 100%;
-    border-collapse: collapse;
-}
-.menu td {
-    padding: 10px;
-}
-.menu a {
-    font-size: 30px;
-    padding: 18px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    border: 3px solid #ccc;
-    border-radius: 10px;
-    background: #fff;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, .25);
-    box-sizing: border-box;
-    text-decoration: none;
-    font-weight: bold;
-    color: #007BFF;
-    transition: background .2s, box-shadow .2s;
-}
-.menu a:hover {
-    background: #e0e0e0;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, .35);
-}
-@media (max-width: 900px) {
-    .sidebar {
-        width: 160px;
-        padding: 15px 7px;
-    }
-    .logo-button {
-        font-size: 18px;
-    }
-    .mod-label {
-        font-size: .92em;
-        padding: 3px 8px;
-        margin-left: 8px;
-    }
-    .menu a {
-        font-size: 18px;
-        padding: 10px;
-    }
-}
-        .main-container {
+        .sidebar 
+        {
+            width: 390px;
+            background-color: rgb(61, 131, 184);
+            border-right: 1px solid #ddd;
+            padding: 30px 15px;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.05);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        .logo 
+        {
+            display: flex;
+            align-items: center;
+            font-size: 30px;
+            font-weight: bold;
+            color: #f47c2c;
+            margin-bottom: 60px;
+        }
+        .logo-icon 
+        {
+            font-size: 35px;
+            margin-right: 5px;
+            line-height: 1;
+        }
+        .logo-button
+        {
+            display: inline-block;
+            background-color: rgba(244, 124, 44, 0.82);
+            color: whitesmoke;
+            padding: 5px 10px;
+            margin-left: 10px;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+            transition: background-color 0.3s;
+            font-size: 28px;
+        }
+        .logo-button:hover 
+        {
+            background-color: rgb(0, 62, 71);
+        }
+        .mod-label 
+        {
+            color: #14234B;
+            font-weight: bold;
+            font-size: 1em;
+            margin-left: 16px;
+            background: #d6e4ff;
+            padding: 4px 14px;
+            border-radius: 8px;
+            letter-spacing: 1px;
+        }
+        .menu 
+        {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .menu td 
+        {
+            padding: 10px;
+        }
+        .menu a 
+        {
+            font-size: 30px;
+            padding: 18px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border: 3px solid #ccc;
+            border-radius: 10px;
+            background: #fff;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, .25);
+            box-sizing: border-box;
+            text-decoration: none;
+            font-weight: bold;
+            color: #007BFF;
+            transition: background .2s, box-shadow .2s;
+        }
+        .menu a:hover 
+        {
+            background: #e0e0e0;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, .35);
+        }
+        @media (max-width: 900px) {
+            .sidebar 
+            {
+                width: 160px;
+                padding: 15px 7px;
+            }
+            .logo-button 
+            {
+                font-size: 18px;
+            }
+            .mod-label 
+            {
+                font-size: .92em;
+                padding: 3px 8px;
+                margin-left: 8px;
+            }
+            .menu a 
+            {
+                font-size: 18px;
+                padding: 10px;
+            }
+        }
+        .main-container 
+        {
             flex-grow: 1;
             display: flex;
             flex-direction: column;
@@ -167,10 +186,11 @@ $conn->close();
             height: 100vh;
             box-sizing: border-box;
         }
-        .container {
+        .container 
+        {
             background-color: #eee9e9;
             color: #333;
-            border-left: 8px solidrgb(244, 241, 66);
+            border-left: 8px solid rgb(244, 241, 66);
             padding: 28px 40px;
             border-radius: 12px;
             margin: 0 auto;
@@ -185,12 +205,14 @@ $conn->close();
             justify-content: center;
             margin-top: 50px;
         }
-        h1 {
+        h1 
+        {
             font-size: 28px;
             font-weight: bold;
             color: #14234B;
         }
-        .feature {
+        .feature 
+        {
             border: 2px solid #ccc;
             border-radius: 10px;
             margin-top: 20px;
@@ -199,18 +221,22 @@ $conn->close();
             background-color: #fafafa;
             align-items: center;
         }
-        .feature input {
+        .feature input 
+        {
             margin-right: 30px;
             transform: scale(2);
         }
-        .feature h3 {
+        .feature h3 
+        {
             margin: 0 0 5px 0;
         }
-        .feature p {
+        .feature p 
+        {
             margin: 0;
             font-size: 0.98em;
         }
-        .code-box {
+        .code-box 
+        {
             margin-top: 40px;
             padding: 20px;
             background: #f3f3f3;
@@ -221,7 +247,8 @@ $conn->close();
             border-radius: 8px;
             color: #333;
         }
-        .button {
+        .button 
+        {
             display: block;
             margin: 30px auto 0;
             padding: 12px 36px;
@@ -234,49 +261,43 @@ $conn->close();
             font-weight: bold;
             letter-spacing: 1px;
         }
-        .button:hover {
+        .button:hover 
+        {
             background-color: #389638;
         }
-        .end-button {
+        .end-button 
+        {
             background-color: #d9534f;
             margin-top: 32px;
         }
-        .end-button:hover {
+        .end-button:hover 
+        {
             background: #a52823;
-        }
-        @media (max-width: 900px) {
-            .sidebar { width: 180px; padding: 12px 4px; }
-            .logo-combined { font-size: 18px; padding: 8px 7px 8px 5px; }
-            .logo-icon { width: 30px; height: 30px; }
-            .logo-button { font-size: 15px; }
-            .menu a { font-size: 17px; padding: 7px; }
-            .container { max-width: 96vw; padding: 15px 7px; margin-top: 22px;}
-            h1 { font-size: 19px;}
         }
     </style>
 </head>
 
 <body>
     <div class="sidebar">
-    <div class="logo">
-        <img src="https://cdn.creazilla.com/emojis/49577/monkey-emoji-clipart-xl.png" width="55px" height="55px" class="logo-icon" style="margin-left: 7px;" />
-        <a href="anasayfa.php" class="logo-button">QuestionLive</a>
-        <span class="mod-label">Mod</span>
+        <div class="logo">
+            <img src="https://cdn.creazilla.com/emojis/49577/monkey-emoji-clipart-xl.png" width="55px" height="55px" class="logo-icon" style="margin-left: 7px;" />
+            <a href="anasayfa.php" class="logo-button">QuestionLive</a>
+            <span class="mod-label">Mod</span>
+        </div>
+        <div class="menu">
+            <table class="menu">
+                <tr>
+                    <td><a href="modChatwall.php">💬 Chat</a></td>
+                </tr>
+                <tr>
+                    <td><a href="modQuiz.php">❔ Quiz</a></td>
+                </tr>
+                <tr>
+                    <td><a href="createSession.php">🎓 Session</a></td>
+                </tr>
+            </table>
+        </div>
     </div>
-    <div class="menu">
-        <table class="menu">
-            <tr>
-                <td><a href="modChatwall.php">💬 Chat</a></td>
-            </tr>
-            <tr>
-                <td><a href="modQuiz.php">❔ Quiz</a></td>
-            </tr>
-            <tr>
-                <td><a href="createSession.php">🎓 Session</a></td>
-            </tr>
-        </table>
-    </div>
-</div>
 
     <div class="main-container">
         <?php if ($sessionCode === null): ?>
@@ -308,6 +329,31 @@ $conn->close();
                 <div class="code-box">
                     Aktif Oturum Kodu: <?php echo htmlspecialchars($sessionCode); ?>
                 </div>
+                <?php
+                $stmt = $conn->prepare("SELECT id FROM sessions WHERE session_code = ?");
+                $stmt->bind_param("s", $sessionCode);
+                $stmt->execute();
+                $result = $stmt->get_result();
+                $sid = null;
+                if ($row = $result->fetch_assoc()) 
+                {
+                    $sid = $row['id'];
+                }
+                $stmt->close();
+                $count = 0;
+                if ($sid) 
+                {
+                    $stmt2 = $conn->prepare("SELECT COUNT(*) as cnt FROM session_attendees WHERE session_id = ?");
+                    $stmt2->bind_param("i", $sid);
+                    $stmt2->execute();
+                    $result2 = $stmt2->get_result();
+                    if ($row2 = $result2->fetch_assoc()) {
+                        $count = $row2['cnt'];
+                    }
+                    $stmt2->close();
+                }
+                echo "<div style='margin-top:22px;font-size:20px;color:#1a237e;font-weight:bold;'>Katılımcı Sayısı: $count</div>";
+                ?>
                 <form action="endSession.php" method="post" style="text-align: center;">
                     <input type="hidden" name="session_code" value="<?php echo htmlspecialchars($sessionCode); ?>">
                     <button type="submit" class="button end-button">Oturumu Sonlandır</button>
@@ -317,3 +363,6 @@ $conn->close();
     </div>
 </body>
 </html>
+<?php
+$conn->close();
+?>

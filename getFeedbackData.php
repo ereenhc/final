@@ -3,7 +3,8 @@ require_once("connection.php");
 
 $session_id = $_GET['session_id'] ?? null;
 
-if (!$session_id) {
+if (!$session_id) 
+{
     echo json_encode(['error' => 'Session ID yok']);
     exit;
 }
@@ -18,7 +19,8 @@ $stmt->bind_param("i", $session_id);
 $stmt->execute();
 $result = $stmt->get_result();
 
-$data = [
+$data = 
+[
     'too_fast' => 0,
     'too_slow' => 0,
     'too_quiet' => 0,
@@ -27,7 +29,8 @@ $data = [
     'panic' => 0
 ];
 
-while ($row = $result->fetch_assoc()) {
+while ($row = $result->fetch_assoc()) 
+{
     $data[$row['feedback_type']] = (int)$row['count'];
 }
 

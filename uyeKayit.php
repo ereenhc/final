@@ -3,45 +3,52 @@ session_start();
 require_once("connection.php");
 
 $language = isset($_SESSION['language']) ? $_SESSION['language'] : 'tr';
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['language'])) {
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['language'])) 
+{
   $language = $_SESSION['language'] = $_POST['language'];
 }
 
 $theme = isset($_SESSION['theme']) ? $_SESSION['theme'] : 'dark';
-if (isset($_POST['theme'])) {
+if (isset($_POST['theme'])) 
+{
   $theme = $_SESSION['theme'] = $_POST['theme'];
 }
 
 $message = "";
 $messageType = "";
 
-if (isset($_POST["kaydet"])) {
+if (isset($_POST["kaydet"])) 
+{
   $uye_adi = $_POST["uye_adi"];
   $uye_soyadi = $_POST["uye_soyadi"];
   $uye_mail = $_POST["uye_mail"];
   $uye_sifre = password_hash($_POST["uye_sifre"], PASSWORD_DEFAULT);
 
-  // E-posta kontrolü
   $sql = "SELECT * FROM uyeler WHERE uye_mail = ?";
   $stmt = $conn->prepare($sql);
   $stmt->bind_param("s", $uye_mail);
   $stmt->execute();
   $result = $stmt->get_result();
 
-  if ($result->num_rows > 0) {
+  if ($result->num_rows > 0)
+  {
     $message = "Bu Kullanıcı Zaten Mevcut.";
     $messageType = "error";
-  } else {
-    // Yeni kullanıcı ekleme
+  } 
+  else
+  {
     $sql = "INSERT INTO uyeler (uye_adi, uye_soyadi, uye_mail, uye_sifre)
                 VALUES (?, ?, ?, ?)";
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("ssss", $uye_adi, $uye_soyadi, $uye_mail, $uye_sifre);
 
-    if ($stmt->execute()) {
+    if ($stmt->execute()) 
+    {
       $message = "Kullanıcı başarıyla eklendi.";
       $messageType = "success";
-    } else {
+    } 
+    else 
+    {
       $message = "Hata: " . $stmt->error;
       $messageType = "error";
     }
@@ -56,7 +63,7 @@ if (isset($_POST["kaydet"])) {
 
 <head>
   <meta charset="UTF-8">
-  <title>QuestionLive - <?= $language === 'tr' ? 'Kayıt Ol' : 'Sign Up' ?></title>
+  <title><?= $language === 'tr' ? 'Kayıt Ol' : 'Sign Up' ?></title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
@@ -67,23 +74,25 @@ if (isset($_POST["kaydet"])) {
         setTimeout(() => {
           messageBox.style.transition = "opacity 0.5s ease";
           messageBox.style.opacity = "0";
-          setTimeout(() => messageBox.remove(), 500); // tamamen silinsin
-        }, 4000); // 4 saniye sonra başlasın
+          setTimeout(() => messageBox.remove(), 500); 
+        }, 4000); 
       }
     });
   </script>
 
   <style>
-    body {
+    body 
+    {
       margin: 0;
       font-family: 'Segoe UI', sans-serif;
-      background-color: <?= $theme === 'dark' ? '#121212' : '#f0f0f0' ?>;
+      background-color: <?= $theme === 'dark' ? '#121212' : '#ffffe0' ?>;
       color: <?= $theme === 'dark' ? '#fff' : '#000' ?>;
       transition: background-color 0.3s, color 0.3s;
     }
 
-    header {
-      background-color: <?= $theme === 'dark' ? '#001f24' : '#fff' ?>;
+    header 
+    {
+      background-color: <?= $theme === 'dark' ? '#001f24' : '#2e8b57' ?>;
       padding: 30px 50px;
       display: flex;
       justify-content: space-between;
@@ -92,7 +101,8 @@ if (isset($_POST["kaydet"])) {
       flex-wrap: wrap;
     }
 
-    .logo {
+    .logo 
+    {
       display: flex;
       align-items: center;
       font-size: 30px;
@@ -100,21 +110,22 @@ if (isset($_POST["kaydet"])) {
       color: #f47c2c;
     }
 
-    .logo-icon {
+    .logo-icon 
+    {
       font-size: 36px;
       margin-right: 12px;
       line-height: 1;
     }
 
-    .logo:hover {
+    .logo:hover 
+    {
       opacity: 0.8;
     }
 
-    .logo-button {
+    .logo-button 
+    {
       display: inline-block;
       background-color: rgba(244, 124, 44, 0.82);
-
-      /* Buton rengi */
       color: whitesmoke;
       padding: 7.5px 20px;
       margin-left: 10px;
@@ -124,15 +135,18 @@ if (isset($_POST["kaydet"])) {
       transition: background-color 0.3s;
     }
 
-    .logo-button:hover {
+    .logo-button:hover 
+    {
       background-color: rgb(0, 62, 71);
     }
 
-    .menu form {
+    .menu form 
+    {
       display: inline;
     }
 
-    .menu button {
+    .menu button 
+    {
       padding: 7px 14px;
       border: 2px solid #f47c2c;
       background-color: transparent;
@@ -141,13 +155,15 @@ if (isset($_POST["kaydet"])) {
       cursor: pointer;
     }
 
-    .menu button:hover {
+    .menu button:hover 
+    {
       background-color: #f47c2c;
       color: #000;
     }
 
     .language-switch,
-    .theme-switch {
+    .theme-switch 
+    {
       background: none;
       color: #f47c2c;
       border: none;
@@ -155,16 +171,18 @@ if (isset($_POST["kaydet"])) {
       font-size: 20px;
     }
 
-    .main {
+    .main 
+    {
       display: flex;
       justify-content: center;
       align-items: center;
       padding: 80px 20px;
     }
 
-    .login-box {
+    .login-box 
+    {
       margin-top: 65px;
-      background-color: <?= $theme === 'dark' ? '#1e1e1e' : '#fff' ?>;
+      background-color: <?= $theme === 'dark' ? '#1e1e1e' : '#eeeed1' ?>;
       border: 5px solid <?= $theme === 'dark' ? '#333' : '#ccc' ?>;
       border-radius: 35px;
       padding: 70px;
@@ -173,7 +191,8 @@ if (isset($_POST["kaydet"])) {
       box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
     }
 
-    .login-box h2 {
+    .login-box h2 
+    {
       margin-bottom: 25px;
       color: #f47c2c;
       text-align: center;
@@ -192,7 +211,8 @@ if (isset($_POST["kaydet"])) {
       color: <?= $theme === 'dark' ? '#fff' : '#000' ?>;
     }
 
-    .login-box button {
+    .login-box button 
+    {
       width: 100%;
       padding: 12px;
       background-color: #f47c2c;
@@ -203,11 +223,13 @@ if (isset($_POST["kaydet"])) {
       margin-top: 10px;
     }
 
-    .login-box button:hover {
+    .login-box button:hover 
+    {
       background-color: #da6d23;
     }
 
-    .login-box a {
+    .login-box a 
+    {
       display: block;
       text-align: center;
       margin-top: 15px;
@@ -215,51 +237,48 @@ if (isset($_POST["kaydet"])) {
       text-decoration: none;
     }
 
-    .login-box a:hover {
+    .login-box a:hover 
+    {
       text-decoration: underline;
     }
 
-    .error {
+    .error 
+    {
       background-color: rgb(255, 0, 0);
       color: #000000;
       padding: 10px 20px;
       margin: 20px auto;
-      /* Ortalamak için */
       border-radius: 6px;
       text-align: center;
       width: fit-content;
-      /* İçeriğe göre genişlik */
       max-width: 90%;
-      /* Taşmayı önlemek için */
       box-shadow: 0 2px 6px rgba(255, 0, 0, 0.1);
-      /* Daha hoş görünüm */
       font-size: 14px;
     }
 
-    .success {
+    .success 
+    {
       background-color: rgb(26, 255, 0);
       color: rgb(103, 93, 93);
       padding: 10px 20px;
       margin: 20px auto;
-      /* Ortalamak için */
       border-radius: 6px;
       text-align: center;
       width: fit-content;
-      /* İçeriğe göre genişlik */
       max-width: 90%;
-      /* Taşmayı önlemek için */
       box-shadow: 0 2px 6px rgba(0, 255, 13, 0.15);
-      /* Daha hoş görünüm */
       font-size: 14px;
     }
 
-    #messageBox {
+    #messageBox 
+    {
       transition: opacity 0.5s ease, max-height 0.5s ease;
       max-height: 200px;
       overflow: hidden;
     }
 
-    #messageBox.hide {
+    #messageBox.hide 
+    {
       opacity: 0;
       max-height: 0;
       padding: 0;
@@ -268,8 +287,9 @@ if (isset($_POST["kaydet"])) {
 
 
 
-    footer {
-      background-color: <?= $theme === 'dark' ? '#001f24' : '#fff' ?>;
+    footer 
+    {
+      background-color: <?= $theme === 'dark' ? '#001f24' : '#2e8b57' ?>;
       color: <?= $theme === 'dark' ? '#da6d23' : '#333' ?>;
       text-align: center;
       padding: 30px 10px;
@@ -286,7 +306,6 @@ if (isset($_POST["kaydet"])) {
     </div>
 <?php endif; ?> -->
 
-  <!-- HEADER -->
   <header>
     <div class="logo">
       <img src="https://cdn.creazilla.com/emojis/49577/monkey-emoji-clipart-xl.png" width="55px" height="55px" class="logo-icon" style="margin-left: 50px;" />
@@ -306,7 +325,6 @@ if (isset($_POST["kaydet"])) {
     </div>
   </header>
 
-  <!-- MAIN -->
   <div class="main">
     <div class="login-box">
       <h2><?= $language === 'tr' ? 'Üye Kayıt' : 'Sign Up' ?></h2>
@@ -328,7 +346,6 @@ if (isset($_POST["kaydet"])) {
     </div>
   </div>
 
-  <!-- FOOTER -->
   <footer>
     <h3><?= $language === 'tr' ? 'İletişim' : 'Contact' ?></h3>
     <p><?= $language === 'tr' ? 'E-posta: destek@questionlive.com' : 'Email: destek@questionlive.com' ?></p>
@@ -354,7 +371,8 @@ if (isset($_POST["kaydet"])) {
       <?php echo $message; ?>
     </div>
     <script>
-      setTimeout(() => {
+      setTimeout(() => 
+      {
         document.querySelector('.notification').style.display = 'none';
         <?php if ($messageType === "success"): ?>
           window.location.href = "uyeGiris.php";
@@ -366,11 +384,14 @@ if (isset($_POST["kaydet"])) {
   <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
   <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
   <script>
-    function validateForm() {
+    function validateForm() 
+    {
       const form = document.forms[0];
       const inputs = form.getElementsByTagName('input');
-      for (let input of inputs) {
-        if (input.value.trim() === '') {
+      for (let input of inputs) 
+      {
+        if (input.value.trim() === '') 
+        {
           alert('Lütfen tüm alanları doldurunuz.');
           return false;
         }
@@ -381,17 +402,21 @@ if (isset($_POST["kaydet"])) {
     const togglePassword = document.getElementById("togglePassword");
     const password = document.getElementById("password");
 
-    togglePassword.addEventListener("click", function() {
+    togglePassword.addEventListener("click", function() 
+    {
       const type = password.getAttribute("type") === "password" ? "text" : "password";
       password.setAttribute("type", type);
       this.name = this.name === "eye-outline" ? "eye-off-outline" : "eye-outline";
     });
   </script>
   <script>
-    window.addEventListener("DOMContentLoaded", function() {
+    window.addEventListener("DOMContentLoaded", function() 
+    {
       const messageBox = document.getElementById("messageBox");
-      if (messageBox) {
-        setTimeout(() => {
+      if (messageBox) 
+      {
+        setTimeout(() => 
+        {
           messageBox.classList.add("hide");
         }, 5000);
       }

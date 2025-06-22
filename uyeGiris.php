@@ -3,17 +3,20 @@ session_start();
 require_once("connection.php");
 
 $language = isset($_SESSION['language']) ? $_SESSION['language'] : 'tr';
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['language'])) {
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['language'])) 
+{
   $language = $_SESSION['language'] = $_POST['language'];
 }
 
 $theme = isset($_SESSION['theme']) ? $_SESSION['theme'] : 'dark';
-if (isset($_POST['theme'])) {
+if (isset($_POST['theme'])) 
+{
   $theme = $_SESSION['theme'] = $_POST['theme'];
 }
 
 $message = "";
-if (isset($_POST["giris"])) {
+if (isset($_POST["giris"]))
+ {
   $uye_mail = $_POST["uye_mail"];
   $uye_sifre = $_POST["uye_sifre"];
 
@@ -23,27 +26,36 @@ if (isset($_POST["giris"])) {
   $stmt->execute();
   $result = $stmt->get_result();
 
-  if ($result->num_rows === 1) {
+  if ($result->num_rows === 1) 
+  {
     $user = $result->fetch_assoc();
-    if (password_verify($uye_sifre, $user['uye_sifre'])) {
+    if (password_verify($uye_sifre, $user['uye_sifre'])) 
+    {
       $_SESSION["uye_id"] = $user["uye_id"];
       $_SESSION["uye_adi"] = $user["uye_adi"];
       $_SESSION["uye_soyadi"] = $user["uye_soyadi"];
       $_SESSION["uye_mail"] = $user["uye_mail"];
       $_SESSION["giris_basarili"] = true; //DENEME
       // ADMIN KONTROLÜ EKLENDİ
-      if (isset($user["is_admin"]) && $user["is_admin"] == 1) {
+      if (isset($user["is_admin"]) && $user["is_admin"] == 1)
+      {
         $_SESSION["is_admin"] = 1;
         header("Location: moderatorPanel.php");
-      } else {
+      } 
+      else 
+      {
         $_SESSION["is_admin"] = 0;
         header("Location: anaSayfa.php");
       }
       exit;
-    } else {
+    } 
+    else 
+    {
       $message = $language === 'tr' ? "Şifre Hatalı!!" : "Incorrect password.";
     }
-  } else {
+  } 
+  else 
+  {
     $message = $language === 'tr' ? "E-posta Hatalı." : "Email is incorrect.";
   }
   $stmt->close();
@@ -60,7 +72,8 @@ if (isset($_POST["giris"])) {
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <style>
-    body {
+    body 
+    {
       margin: 0;
       font-family: 'Segoe UI', sans-serif;
       background-color: <?= $theme === 'dark' ? '#121212' : '#ffffe0' ?>;
@@ -68,7 +81,8 @@ if (isset($_POST["giris"])) {
       transition: background-color 0.3s, color 0.3s;
     }
 
-    header {
+    header 
+    {
       background-color: <?= $theme === 'dark' ? '#001f24' : '#2e8b57' ?>;
       padding: 30px 50px;
       display: flex;
@@ -78,7 +92,8 @@ if (isset($_POST["giris"])) {
       flex-wrap: wrap;
     }
 
-    .logo {
+    .logo
+    {
       display: flex;
       align-items: center;
       font-size: 30px;
@@ -86,17 +101,20 @@ if (isset($_POST["giris"])) {
       color: #f47c2c;
     }
 
-    .logo-icon {
+    .logo-icon 
+    {
       font-size: 36px;
       margin-right: 12px;
       line-height: 1;
     }
 
-    .logo:hover {
+    .logo:hover 
+    {
       opacity: 0.8;
     }
 
-    .logo-button {
+    .logo-button 
+    {
       display: inline-block;
       background-color: rgba(244, 124, 44, 0.82);
       color: whitesmoke;
@@ -108,15 +126,18 @@ if (isset($_POST["giris"])) {
       transition: background-color 0.3s;
     }
 
-    .logo-button:hover {
+    .logo-button:hover 
+    {
       background-color: rgb(0, 62, 71);
     }
 
-    .menu form {
+    .menu form 
+    {
       display: inline;
     }
 
-    .menu button {
+    .menu button 
+    {
       padding: 7px 14px;
       border: 2px solid #f47c2c;
       background-color: transparent;
@@ -125,13 +146,15 @@ if (isset($_POST["giris"])) {
       cursor: pointer;
     }
 
-    .menu button:hover {
+    .menu button:hover 
+    {
       background-color: #f47c2c;
       color: #000;
     }
 
     .language-switch,
-    .theme-switch {
+    .theme-switch 
+    {
       background: none;
       color: #f47c2c;
       border: none;
@@ -139,14 +162,16 @@ if (isset($_POST["giris"])) {
       font-size: 20px;
     }
 
-    .main {
+    .main 
+    {
       display: flex;
       justify-content: center;
       align-items: center;
       padding: 80px 20px;
     }
 
-    .login-box {
+    .login-box 
+    {
       margin-top: 65px;
       background-color: <?= $theme === 'dark' ? '#1e1e1e' : '#eeeed1' ?>;
       border: 5px solid <?= $theme === 'dark' ? '#333' : '#ccc' ?>;
@@ -157,14 +182,16 @@ if (isset($_POST["giris"])) {
       box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
     }
 
-    .login-box h2 {
+    .login-box h2 
+    {
       margin-bottom: 25px;
       color: #f47c2c;
       text-align: center;
     }
 
     .login-box input[type="email"],
-    .login-box input[type="password"] {
+    .login-box input[type="password"]
+    {
       width: 94%;
       padding: 12px;
       margin: 10px 0;
@@ -174,7 +201,8 @@ if (isset($_POST["giris"])) {
       color: <?= $theme === 'dark' ? '#fff' : '#000' ?>;
     }
 
-    .login-box button {
+    .login-box button 
+    {
       width: 100%;
       padding: 12px;
       background-color: #f47c2c;
@@ -185,11 +213,13 @@ if (isset($_POST["giris"])) {
       margin-top: 10px;
     }
 
-    .login-box button:hover {
+    .login-box button:hover 
+    {
       background-color: #da6d23;
     }
 
-    .login-box a {
+    .login-box a 
+    {
       display: block;
       text-align: center;
       margin-top: 15px;
@@ -197,11 +227,13 @@ if (isset($_POST["giris"])) {
       text-decoration: none;
     }
 
-    .login-box a:hover {
+    .login-box a:hover 
+    {
       text-decoration: underline;
     }
 
-    .error {
+    .error 
+    {
       background-color: rgb(255, 35, 35);
       color: rgb(0, 0, 0);
       padding: 10px;
@@ -210,7 +242,8 @@ if (isset($_POST["giris"])) {
       text-align: center;
     }
 
-    footer {
+    footer 
+    {
       background-color: <?= $theme === 'dark' ? '#001f24' : '#2e8b57' ?>;
       color: <?= $theme === 'dark' ? '#da6d23' : '#333' ?>;
       text-align: center;
@@ -222,7 +255,6 @@ if (isset($_POST["giris"])) {
 
 <body>
 
-  <!-- HEADER -->
   <header>
     <div class="logo">
       <img src="https://cdn.creazilla.com/emojis/49577/monkey-emoji-clipart-xl.png" width="55px" height="55px" class="logo-icon" style="margin-left: 50px;" />
@@ -242,7 +274,6 @@ if (isset($_POST["giris"])) {
     </div>
   </header>
 
-  <!-- MAIN -->
   <div class="main">
     <div class="login-box">
       <h2><?= $language === 'tr' ? 'Üye Giriş' : 'Member Login' ?></h2>
@@ -260,7 +291,6 @@ if (isset($_POST["giris"])) {
     </div>
   </div>
 
-  <!-- FOOTER -->
   <footer>
     <h3><?= $language === 'tr' ? 'İletişim' : 'Contact' ?></h3>
     <p><?= $language === 'tr' ? 'E-posta: destek@questionlive.com' : 'Email: destek@questionlive.com' ?></p>
@@ -283,4 +313,4 @@ if (isset($_POST["giris"])) {
 
 </body>
 
-</html>
+</html> 

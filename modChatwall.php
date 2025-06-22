@@ -2,32 +2,43 @@
 session_start();
 require_once("connection.php");
 
-/* Oturum kodu yoksa */
-if (!isset($_SESSION['current_session_code'])) {
+if (!isset($_SESSION['current_session_code'])) 
+{
     echo "<script>
             alert('Oturum kodu belirtilmedi.');
             window.location.href = 'createSession.php';
           </script>";
     exit;
 }
-
+if (!isset($_SESSION['uye_adi'])) 
+{
+    echo "<script>
+            alert('Giriş bilgisi eksik.');
+            window.location.href = 'anasayfa.php';
+          </script>";
+    exit;
+}
+$modAd = $_SESSION['uye_adi'];
 $sessionCode = $_SESSION['current_session_code'];
 
-/* chatwall yetkisini sorgula */
-$stmt = $conn->prepare("SELECT chatwall FROM sessions WHERE session_code = ?");
+$stmt = $conn->prepare("SELECT id, chatwall FROM sessions WHERE session_code = ?");
 $stmt->bind_param("s", $sessionCode);
 $stmt->execute();
 $result = $stmt->get_result();
-
-if ($row = $result->fetch_assoc()) {
-    if ($row['chatwall'] != 1) {
+if ($row = $result->fetch_assoc()) 
+{
+    if ($row['chatwall'] != 1) 
+    {
         echo "<script>
                 alert('Bu özellik bu oturumda aktif değil.');
                 window.location.href = 'createSession.php';
               </script>";
         exit;
     }
-} else {
+    $sessionId = $row['id'];
+} 
+else 
+{
     echo "<script>
             alert('Geçersiz oturum kodu.');
             window.location.href = 'createSession.php';
@@ -35,14 +46,14 @@ if ($row = $result->fetch_assoc()) {
     exit;
 }
 ?>
-
 <!DOCTYPE html>
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
     <title>ChatWall (Mod)</title>
     <style>
-        body {
+        body 
+        {
             font-family: Arial, sans-serif;
             background: #faebd7;
             margin: 0;
@@ -51,7 +62,8 @@ if ($row = $result->fetch_assoc()) {
             flex-direction: row;
             min-height: 100vh;
         }
-        .sidebar {
+        .sidebar 
+        {
             width: 390px;
             background-color: rgb(61, 131, 184);
             border-right: 1px solid #ddd;
@@ -62,7 +74,8 @@ if ($row = $result->fetch_assoc()) {
             flex-direction: column;
             align-items: flex-start;
         }
-        .logo {
+        .logo 
+        {
             display: flex;
             align-items: center;
             font-size: 30px;
@@ -70,12 +83,14 @@ if ($row = $result->fetch_assoc()) {
             color: #f47c2c;
             margin-bottom: 60px;
         }
-        .logo-icon {
+        .logo-icon 
+        {
             font-size: 35px;
             margin-right: 5px;
             line-height: 1;
         }
-        .logo-button {
+        .logo-button 
+        {
             display: inline-block;
             background-color: rgba(244, 124, 44, 0.82);
             color: whitesmoke;
@@ -87,10 +102,12 @@ if ($row = $result->fetch_assoc()) {
             transition: background-color 0.3s;
             font-size: 28px;
         }
-        .logo-button:hover {
+        .logo-button:hover 
+        {
             background-color: rgb(0, 62, 71);
         }
-        .mod-label {
+        .mod-label 
+        {
             color: #14234B;
             font-weight: bold;
             font-size: 1em;
@@ -100,14 +117,17 @@ if ($row = $result->fetch_assoc()) {
             border-radius: 8px;
             letter-spacing: 1px;
         }
-        .menu {
+        .menu 
+        {
             width: 100%;
             border-collapse: collapse;
         }
-        .menu td {
-            padding: 10px;
+        .menu td 
+        { 
+            padding: 10px; 
         }
-        .menu a {
+        .menu a 
+        {
             font-size: 30px;
             padding: 18px;
             display: flex;
@@ -123,11 +143,13 @@ if ($row = $result->fetch_assoc()) {
             color: #007BFF;
             transition: background .2s, box-shadow .2s;
         }
-        .menu a:hover {
+        .menu a:hover 
+        {
             background: #e0e0e0;
             box-shadow: 0 4px 8px rgba(0, 0, 0, .35);
         }
-        .main-container {
+        .main-container 
+        {
             flex-grow: 1;
             padding: 40px;
             display: flex;
@@ -135,18 +157,20 @@ if ($row = $result->fetch_assoc()) {
             align-items: center;
             justify-content: center;
         }
-        h2 {
-            text-align: center;
-            margin-bottom: 20px;
+        h2 
+        { 
+            text-align: center; margin-bottom: 20px; 
         }
-        #chat-container {
+        #chat-container 
+        {
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             width: 100%;
         }
-        #chat-box {
+        #chat-box 
+        {
             width: 70%;
             height: 500px;
             border: 2px solid #ccc;
@@ -156,13 +180,15 @@ if ($row = $result->fetch_assoc()) {
             margin-bottom: 20px;
             border-radius: 5px;
         }
-        .message {
+        .message 
+        {
             margin-bottom: 10px;
             display: flex;
             align-items: center;
             justify-content: space-between;
         }
-        .delete-btn {
+        .delete-btn 
+        {
             background: #222a50;
             color: white;
             border: none;
@@ -173,22 +199,26 @@ if ($row = $result->fetch_assoc()) {
             font-size: 0.98em;
             transition: background 0.15s;
         }
-        .delete-btn:hover {
-            background: #f47c2c;
+        .delete-btn:hover 
+        {
+             background: #f47c2c; 
         }
-        #chat-form {
+        #chat-form 
+        {
             display: flex;
             justify-content: center;
             gap: 15px;
             width: 65%;
             margin-bottom: 100px;
         }
-        #chat-form input {
+        #chat-form input 
+        {
             padding: 10px;
             font-size: 16px;
-            width: 30%;
+            width: 90%; 
         }
-        #chat-form button {
+        #chat-form button 
+        {
             padding: 10px 20px;
             background-color: #5cb85c;
             color: white;
@@ -197,25 +227,28 @@ if ($row = $result->fetch_assoc()) {
             font-size: 16px;
             cursor: pointer;
         }
-        #chat-form button:hover {
-            background-color: #4cae4c;
+        #chat-form button:hover 
+        { 
+            background-color: #4cae4c; 
         }
-        @media (max-width: 900px) {
-            .sidebar {
+        @media (max-width: 900px) 
+        {
+            .sidebar 
+            {
                 width: 160px;
                 padding: 15px 7px;
             }
-            .logo-button {
-                font-size: 18px;
+            .logo-button
+            { 
+                font-size: 18px; 
             }
-            .mod-label {
-                font-size: .92em;
-                padding: 3px 8px;
-                margin-left: 8px;
+            .mod-label 
+            { 
+                font-size: .92em; padding: 3px 8px; margin-left: 8px; 
             }
-            .menu a {
-                font-size: 18px;
-                padding: 10px;
+            .menu a 
+            { 
+                font-size: 18px; padding: 10px; 
             }
         }
     </style>
@@ -229,15 +262,9 @@ if ($row = $result->fetch_assoc()) {
         </div>
         <div class="menu">
             <table class="menu">
-                <tr>
-                    <td><a href="modChatwall.php">💬 Chat</a></td>
-                </tr>
-                <tr>
-                    <td><a href="modQuiz.php">❔ Quiz</a></td>
-                </tr>
-                <tr>
-                    <td><a href="createSession.php">🎓 Session</a></td>
-                </tr>
+                <tr><td><a href="modChatwall.php">💬 Chat</a></td></tr>
+                <tr><td><a href="modQuiz.php">❔ Quiz</a></td></tr>
+                <tr><td><a href="createSession.php">🎓 Session</a></td></tr>
             </table>
         </div>
     </div>
@@ -245,16 +272,18 @@ if ($row = $result->fetch_assoc()) {
         <h2>Chat - Oturum: <?php echo htmlspecialchars($sessionCode); ?></h2>
         <div id="chat-container">
             <div id="chat-box"></div>
-            <form id="chat-form">
-                <input type="text" id="user_name" placeholder="Adınız" required>
+            <form id="chat-form" autocomplete="off">
                 <input type="text" id="message" placeholder="Mesajınız" required>
                 <button type="submit">Gönder</button>
             </form>
         </div>
     </div>
     <script>
-        const sessionId = "<?php echo htmlspecialchars($sessionCode); ?>";
-        function loadMessages() {
+        const sessionId = "<?php echo htmlspecialchars($sessionId); ?>";
+        const userName = <?php echo json_encode($modAd); ?>;
+
+        function loadMessages() 
+        {
             fetch('loadMessages.php?session_id=' + sessionId + '&mod=1')
                 .then(res => res.text())
                 .then(data => {
@@ -265,46 +294,53 @@ if ($row = $result->fetch_assoc()) {
         }
         loadMessages();
         setInterval(loadMessages, 3000);
-        document.getElementById('chat-form').addEventListener('submit', function(e) {
+
+        document.getElementById('chat-form').addEventListener('submit', function(e) 
+        {
             e.preventDefault();
-            const name = document.getElementById('user_name').value.trim();
             const msg = document.getElementById('message').value.trim();
-            // JS kontrol: isimde mod veya yıldız olmasın
-            if(name.toLowerCase().includes('mod') || name.includes('★')) {
+            if(userName.toLowerCase().includes('mod') || userName.includes('★')) 
+            {
                 alert('Kullanıcı adında MOD veya yıldız sembolü kullanamazsınız!');
                 return;
             }
-            fetch('sendMessage.php', {
+            fetch('sendMessage.php', 
+            {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                },
+                headers: {'Content-Type': 'application/x-www-form-urlencoded'},
                 body: 'session_id=' + encodeURIComponent(sessionId) +
-                    '&user_name=' + encodeURIComponent(name) +
-                    '&message=' + encodeURIComponent(msg) +
-                    '&is_mod=1'
+                      '&user_name=' + encodeURIComponent(userName) +
+                      '&message=' + encodeURIComponent(msg) +
+                      '&is_mod=1'
             }).then(r => r.json())
-            .then(resp => {
-                if(resp.success) {
+            .then(resp => 
+            {
+                if(resp.success) 
+                {
                     document.getElementById('message').value = '';
                     loadMessages();
-                } else {
+                } 
+                else 
+                {
                     alert(resp.message || "Bir hata oluştu.");
                 }
             });
         });
-        // Sil butonları için
-        document.addEventListener('click', function(e) {
-            if (e.target.classList.contains('delete-btn')) {
+
+        document.addEventListener('click', function(e) 
+        {
+            if (e.target.classList.contains('delete-btn')) 
+            {
                 const msgId = e.target.getAttribute('data-id');
-                if (confirm('Mesajı silmek istediğine emin misin?')) {
-                    fetch('deleteMessage.php', {
+                if (confirm('Mesajı silmek istediğine emin misin?')) 
+                {
+                    fetch('deleteMessage.php', 
+                    {
                         method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/x-www-form-urlencoded'
-                        },
+                        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                         body: 'message_id=' + encodeURIComponent(msgId) + '&session_id=' + encodeURIComponent(sessionId)
-                    }).then(() => {
+                    }).then(() => 
+                    {
                         loadMessages();
                     });
                 }
