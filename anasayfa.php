@@ -161,7 +161,8 @@ if (isset($_SESSION["giris_basarili"]) && $_SESSION["giris_basarili"] === true)
       max-width: 700px;
     }
 
-    .actions {
+    .actions
+    {
 
       display: flex;
       justify-content: center;

@@ -61,5 +61,6 @@ while ($quiz = $quizRes->fetch_assoc())
             echo '<button class="option-btn ' . $isSel . '" onclick="sendAnswer(' . $quiz['id'] . ',\'' . $key . '\')">' . htmlspecialchars($label) . '<span class="count">' . $cnt . ' kişi</span></button>';
         }
     }
-    echo '</div>';
+    echo 
+    '</div>';
 }

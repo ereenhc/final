@@ -5,23 +5,30 @@ require_once("connection.php");
 $language = isset($_SESSION['language']) ? $_SESSION['language'] : 'tr';
 $theme = isset($_SESSION['theme']) ? $_SESSION['theme'] : 'dark';
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+if ($_SERVER['REQUEST_METHOD'] === 'POST') 
+{
     $new_password = $_POST['new_password'];
     $confirm_password = $_POST['confirm_password'];
     $token = $_POST['token'];
 
-    if ($new_password !== $confirm_password) {
+    if ($new_password !== $confirm_password) 
+    {
         $error = $language === 'tr' ? "Şifreler uyuşmuyor." : "Passwords do not match.";
-    } else {
+    } 
+    else 
+    {
         $stmt = $conn->prepare("SELECT uye_id FROM password_resets WHERE token = ? AND expires > ?");
         $now = date("U");
         $stmt->bind_param("si", $token, $now);
         $stmt->execute();
         $result = $stmt->get_result();
 
-        if ($result->num_rows === 0) {
+        if ($result->num_rows === 0) 
+        {
             $error = $language === 'tr' ? "Token geçersiz veya süresi dolmuş." : "Token is invalid or expired.";
-        } else {
+        } 
+        else 
+        {
             $data = $result->fetch_assoc();
             $uye_id = $data['uye_id'];
 
@@ -38,16 +45,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             header("Refresh: 3; url=anaSayfa.php");
         }
     }
-} elseif (!isset($_GET['token'])) {
+} 
+elseif (!isset($_GET['token'])) 
+{
     die("Geçersiz istek.");
-} else {
+}
+else 
+{
     $token = $_GET['token'];
     $stmt = $conn->prepare("SELECT uye_id, expires FROM password_resets WHERE token = ?");
     $stmt->bind_param("s", $token);
     $stmt->execute();
     $result = $stmt->get_result();
 
-    if ($result->num_rows === 0 || $result->fetch_assoc()['expires'] < date("U")) {
+    if ($result->num_rows === 0 || $result->fetch_assoc()['expires'] < date("U")) 
+    {
         die($language === 'tr' ? "Token süresi dolmuş veya geçersiz." : "Token is expired or invalid.");
     }
 }
@@ -61,7 +73,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <title><?= $language === 'tr' ? 'Şifre Sıfırlama' : 'Reset Password' ?></title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
-    body {
+    body 
+    {
       margin: 0;
       font-family: 'Segoe UI', sans-serif;
       background-color: <?= $theme === 'dark' ? '#121212' : '#ffffe0' ?>;
@@ -72,7 +85,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       height: 100vh;
     }
 
-    .reset-box {
+    .reset-box 
+    {
       background-color: <?= $theme === 'dark' ? '#1e1e1e' : '#eeeed1' ?>;
       border: 5px solid <?= $theme === 'dark' ? '#333' : '#ccc' ?>;
       border-radius: 35px;
@@ -82,13 +96,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
     }
 
-    .reset-box h2 {
+    .reset-box h2 
+    {
       margin-bottom: 25px;
       color: #f47c2c;
       text-align: center;
     }
 
-    .reset-box input[type="password"] {
+    .reset-box input[type="password"] 
+    {
       width: 94%;
       padding: 12px;
       margin: 10px 0;
@@ -98,7 +114,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       color: <?= $theme === 'dark' ? '#fff' : '#000' ?>;
     }
 
-    .reset-box button {
+    .reset-box button 
+    {
       width: 100%;
       padding: 12px;
       background-color: #f47c2c;
@@ -109,11 +126,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       margin-top: 10px;
     }
 
-    .reset-box button:hover {
+    .reset-box button:hover 
+    {
       background-color: #da6d23;
     }
 
-    .success, .error {
+    .success, .error 
+    {
       background-color: <?= isset($error) ? 'rgb(255, 35, 35)' : 'rgb(24, 200, 24)' ?>;
       color: <?= $theme === 'dark' ? '#fff' : '#000' ?>;
       padding: 15px 20px;
@@ -127,9 +146,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       animation: fadein 0.5s ease-in-out;
     }
 
-    @keyframes fadein {
-      from { opacity: 0; transform: translateY(-10px); }
-      to { opacity: 1; transform: translateY(0); }
+    @keyframes fadein 
+    {
+      from 
+      { 
+        opacity: 0; transform: translateY(-10px); 
+      }
+      to 
+      { 
+        opacity: 1; transform: translateY(0); 
+      }
     }
   </style>
 </head>
@@ -137,7 +163,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <div class="reset-box">
     <h2><?= $language === 'tr' ? 'Yeni Şifre Belirle' : 'Set New Password' ?></h2>
 
-    <?php if (!empty($error)): ?>
+    <?php 
+    if (!empty($error)): 
+    ?>
       <div class="error"><?= htmlspecialchars($error) ?></div>
     <?php elseif (!empty($success)): ?>
       <div class="success">

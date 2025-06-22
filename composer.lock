@@ -1,32 +1,38 @@
 {
-    "_readme": [
+    "_readme": 
+    [
         "This file locks the dependencies of your project to a known state",
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
     "content-hash": "cb5da62d73716ac8a1776f19367bc28f",
-    "packages": [
+    "packages": 
+    [
         {
             "name": "phpmailer/phpmailer",
             "version": "v6.10.0",
-            "source": {
+            "source": 
+            {
                 "type": "git",
                 "url": "https://github.com/PHPMailer/PHPMailer.git",
                 "reference": "bf74d75a1fde6beaa34a0ddae2ec5fce0f72a144"
             },
-            "dist": {
+            "dist": 
+            {
                 "type": "zip",
                 "url": "https://api.github.com/repos/PHPMailer/PHPMailer/zipball/bf74d75a1fde6beaa34a0ddae2ec5fce0f72a144",
                 "reference": "bf74d75a1fde6beaa34a0ddae2ec5fce0f72a144",
                 "shasum": ""
             },
-            "require": {
+            "require": 
+            {
                 "ext-ctype": "*",
                 "ext-filter": "*",
                 "ext-hash": "*",
                 "php": ">=5.5.0"
             },
-            "require-dev": {
+            "require-dev": 
+            {
                 "dealerdirect/phpcodesniffer-composer-installer": "^1.0",
                 "doctrine/annotations": "^1.2.6 || ^1.13.3",
                 "php-parallel-lint/php-console-highlighter": "^1.0.0",
@@ -36,7 +42,8 @@
                 "squizlabs/php_codesniffer": "^3.7.2",
                 "yoast/phpunit-polyfills": "^1.0.4"
             },
-            "suggest": {
+            "suggest": 
+            {
                 "decomplexity/SendOauth2": "Adapter for using XOAUTH2 authentication",
                 "ext-mbstring": "Needed to send email in multibyte encoding charset or decode encoded addresses",
                 "ext-openssl": "Needed for secure SMTP sending and DKIM signing",
@@ -48,8 +55,10 @@
                 "thenetworg/oauth2-azure": "Needed for Microsoft XOAUTH2 authentication"
             },
             "type": "library",
-            "autoload": {
-                "psr-4": {
+            "autoload": 
+            {
+                "psr-4": 
+                {
                     "PHPMailer\\PHPMailer\\": "src/"
                 }
             },
@@ -75,11 +84,13 @@
                 }
             ],
             "description": "PHPMailer is a full-featured email creation and transfer class for PHP",
-            "support": {
+            "support": 
+            {
                 "issues": "https://github.com/PHPMailer/PHPMailer/issues",
                 "source": "https://github.com/PHPMailer/PHPMailer/tree/v6.10.0"
             },
-            "funding": [
+            "funding": 
+            [
                 {
                     "url": "https://github.com/Synchro",
                     "type": "github"

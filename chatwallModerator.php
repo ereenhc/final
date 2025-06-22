@@ -1,7 +1,8 @@
 
 <?php
 $session_id = $_GET['session_id'] ?? null;
-if (!$session_id) {
+if (!$session_id)
+{
     echo "Oturum kodu belirtilmedi.";
     exit;
 }
@@ -13,12 +14,14 @@ if (!$session_id) {
     <meta charset="UTF-8">
     <title>Chatwall - Moderatör</title>
     <style>
-        body {
+        body
+        {
             font-family: Arial, sans-serif;
             background-color: #f2f2f2;
             padding: 30px;
         }
-        #chatBox {
+        #chatBox 
+        {
             width: 100%;
             height: 400px;
             border: 2px solid #999;
@@ -27,15 +30,18 @@ if (!$session_id) {
             padding: 15px;
             margin-bottom: 20px;
         }
-        .message {
+        .message
+        {
             margin-bottom: 12px;
             padding: 10px;
             border-bottom: 1px solid #eee;
         }
-        .message span {
+        .message span
+        {
             font-weight: bold;
         }
-        .delete-btn {
+        .delete-btn 
+        {
             float: right;
             color: red;
             cursor: pointer;
@@ -52,13 +58,16 @@ if (!$session_id) {
 <script>
     const sessionId = <?= json_encode($session_id) ?>;
 
-    function loadMessages() {
+    function loadMessages() 
+    {
         fetch(`get_chat_messages.php?session_id=${sessionId}`)
             .then(res => res.json())
-            .then(data => {
+            .then(data => 
+            {
                 const chatBox = document.getElementById("chatBox");
                 chatBox.innerHTML = "";
-                data.forEach(msg => {
+                data.forEach(msg =>
+                {
                     const div = document.createElement("div");
                     div.classList.add("message");
                     div.innerHTML = `<span>${msg.user_name}:</span> ${msg.message} 
@@ -69,9 +78,12 @@ if (!$session_id) {
             });
     }
 
-    function deleteMessage(messageId) {
-        if (confirm("Bu mesajı silmek istediğinize emin misiniz?")) {
-            fetch("delete_message.php", {
+    function deleteMessage(messageId) 
+    {
+        if (confirm("Bu mesajı silmek istediğinize emin misiniz?")) 
+        {
+            fetch("delete_message.php", 
+            {
                 method: "POST",
                 headers: {'Content-Type': 'application/x-www-form-urlencoded'},
                 body: `id=${messageId}`

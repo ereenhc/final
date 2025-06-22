@@ -2,9 +2,6 @@
 session_start();
 require_once("connection.php"); 
 
-/*------------------------------------------
-  1) Oturumu bul
-------------------------------------------*/
 $code = $_GET['code'] ?? '';
 if (!$code) die("Oturum kodu eksik.");
 
@@ -16,19 +13,17 @@ if (!($row = $res->fetch_assoc())) die("Geçersiz kod");
 $session_id = (int)$row['id'];
 $stmt->close();
 
-/*------------------------------------------
-  2) Tarayıcıdaki token → user_id eşlemesi
-------------------------------------------*/
 $tokenName = "attendee_token_$session_id";
-if (!isset($_COOKIE[$tokenName])) {
-    // yeni anonim kullanıcı
+if (!isset($_COOKIE[$tokenName])) 
+{
     $token = bin2hex(random_bytes(16));
     setcookie($tokenName, $token, time()+86400, "/");
-} else {
+} 
+else 
+{
     $token = $_COOKIE[$tokenName];
 }
 
-/* user_id'yi bul (veya ekle) */
 $stmt = $conn->prepare("
     SELECT id FROM session_attendees
     WHERE session_id = ? AND user_token = ?
@@ -37,10 +32,12 @@ $stmt->bind_param("is", $session_id, $token);
 $stmt->execute();
 $res = $stmt->get_result();
 
-if ($row = $res->fetch_assoc()) {
-    $user_id = (int)$row['id'];                 // zaten kayıtlı
-} else {
-    // ilk kez katılıyor → ekle
+if ($row = $res->fetch_assoc()) 
+{
+    $user_id = (int)$row['id'];              
+} 
+else 
+{
     $ins = $conn->prepare("
         INSERT INTO session_attendees (session_id, user_token)
         VALUES (?, ?)
@@ -52,9 +49,6 @@ if ($row = $res->fetch_assoc()) {
 }
 $stmt->close();
 
-/*------------------------------------------
-  3) Oturumdaki quiz'leri çek
-------------------------------------------*/
 $qQuiz = $conn->prepare("
     SELECT * FROM quiz
     WHERE session_id = ?
@@ -73,15 +67,50 @@ $qQuiz->close();
 <meta charset="UTF-8">
 <title>Quiz</title>
 <style>
-/* ------------- basit stil ------------- */
-body{font-family:Arial,Helvetica,sans-serif;background:#f3f3f3;padding:40px}
-.quiz-box{background:#fff;border-radius:8px;padding:35px;max-width:420px;margin:45px auto;
-          box-shadow:0 2px 12px #bbb;margin-bottom:35px}
-h2{color:#2d4059}
-.answer-btn{display:block;width:100%;margin-top:14px;padding:15px 0;background:#4285f4;
-            color:#fff;border:none;border-radius:5px;font-size:18px;cursor:pointer;font-weight:bold;transition:.2s}
-.answer-btn:disabled{background:#ccc;cursor:default}
-.chosen{background:#4caf50!important}
+body
+{
+    font-family:Arial,Helvetica,sans-serif;
+    background:#f3f3f3;
+    padding:40px
+}
+.quiz-box
+{
+    background:#fff;
+    border-radius:8px;
+    padding:35px;
+    max-width:420px;
+    margin:45px auto;
+    box-shadow:0 2px 12px #bbb;
+    margin-bottom:35px;
+}
+h2
+{
+    color:#2d4059
+}
+.answer-btn
+{
+    display:block;
+    width:100%;
+    margin-top:14px;
+    padding:15px 0;
+    background:#4285f4;
+    color:#fff;
+    border:none;
+    border-radius:5px;
+    font-size:18px;
+    cursor:pointer;
+    font-weight:bold;
+    transition:.2s
+}
+.answer-btn:disabled
+{
+    background:#ccc;
+    cursor:default
+}
+.chosen
+{
+    background:#4caf50!important
+}
 </style>
 </head>
 <body>
@@ -94,9 +123,6 @@ h2{color:#2d4059}
         <h2><?= htmlspecialchars($quiz['question']) ?></h2>
 
         <?php
-        /*------------------------------------------
-          Kullanıcı bu soruya daha önce cevap verdi mi?
-        ------------------------------------------*/
         $qAns = $conn->prepare("
             SELECT answer FROM quiz_answers
             WHERE quiz_id = ? AND user_id = ?
@@ -106,10 +132,9 @@ h2{color:#2d4059}
         $qAns->execute();
         $old = $qAns->get_result()->fetch_assoc();
         $qAns->close();
-
-        /* Seçenekleri (çoktan seçmeli) oku */
         $options = [];
-        if ($quiz['type'] === "coktan") {
+        if ($quiz['type'] === "coktan") 
+        {
             $optQ = $conn->prepare("
                 SELECT option_key, option_text 
                 FROM quiz_options 
@@ -119,28 +144,32 @@ h2{color:#2d4059}
             $optQ->bind_param("i", $quiz['id']);
             $optQ->execute();
             $optRes = $optQ->get_result();
-            while ($opt = $optRes->fetch_assoc()) {
+            while ($opt = $optRes->fetch_assoc()) 
+            {
                 $options[$opt['option_key']] = $opt['option_text'];
             }
             $optQ->close();
         }
         ?>
 
-        <?php if ($old): /* --- ZATEN CEVABI VAR --- */ ?>
+        <?php if ($old):?>
             <div style="margin-top:24px;">
                 <b>Cevabınız:</b>
                 <?php
-                if ($quiz['type'] === "coktan") {
+                if ($quiz['type'] === "coktan") 
+                {
                     $k = $old['answer'];
                     echo htmlspecialchars($k . " - " . ($options[$k] ?? ''));
-                } else {
+                } 
+                else 
+                {
                     echo ($old['answer'] === "dogru" ? "Doğru" : "Yanlış");
                 }
                 ?>
                 <br><span style="color:green;">(Yanıtınız kaydedildi, tekrar değiştiremezsiniz)</span>
             </div>
 
-        <?php else: /* --- HENÜZ CEVAP VERMEMİŞ --- */ ?>
+        <?php else:?>
             <form onsubmit="return false;">
                 <?php if ($quiz['type'] === "coktan"): ?>
                     <?php foreach ($options as $key => $text): ?>
@@ -160,21 +189,27 @@ h2{color:#2d4059}
 <?php endif; ?>
 
 <script>
-function submitQuiz(quiz_id, answer, btn){
+function submitQuiz(quiz_id, answer, btn)
+{
     const parent = btn.parentElement;
     parent.querySelectorAll('.answer-btn').forEach(b=>b.disabled=true);
 
-    fetch("submitQuizAnswer.php",{
+    fetch("submitQuizAnswer.php",
+    {
         method:"POST",
         headers:{'Content-Type':'application/x-www-form-urlencoded'},
         body:"quiz_id="+quiz_id+"&answer="+encodeURIComponent(answer)
     })
     .then(r=>r.json())
-    .then(d=>{
-        if(d.success){
+    .then(d=>
+    {
+        if(d.success)
+        {
             alert("Cevabınız kaydedildi!");
             location.reload();
-        }else{
+        }
+        else
+        {
             alert("Hata: "+(d.message||''));
             parent.querySelectorAll('.answer-btn').forEach(b=>b.disabled=false);
         }

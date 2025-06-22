@@ -9,7 +9,8 @@ require 'vendor/autoload.php'; // composer ile PHPMailer yuklediysen burasi dogr
 
 $message = "";
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+if ($_SERVER['REQUEST_METHOD'] === 'POST') 
+{
     $email = $_POST['email'];
 
     // Kullanicinin e-posta adresi veritabaninda var mi kontrol et
@@ -18,7 +19,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $stmt->execute();
     $result = $stmt->get_result();
 
-    if ($result->num_rows === 1) {
+    if ($result->num_rows === 1) 
+    {
         $user = $result->fetch_assoc();
 
         // Token olustur (random ve benzersiz)
@@ -73,8 +75,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <title>Sifremi Unuttum</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <style>
-        /* Aynı css kodlarin buraya gelecek, oncekiyle ayni */
-        body {
+        body 
+        {
             margin: 0;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: #121212;
@@ -85,7 +87,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             height: 100vh;
         }
 
-        .forgot-box {
+        .forgot-box 
+        {
             background-color: #1e1e1e;
             padding: 40px 60px;
             border-radius: 30px;
@@ -95,12 +98,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             text-align: center;
         }
 
-        h2 {
+        h2 
+        {
             color: #f47c2c;
             margin-bottom: 25px;
         }
 
-        input[type="email"] {
+        input[type="email"] 
+        {
             width: 92%;
             padding: 12px;
             margin: 15px 0;
@@ -111,7 +116,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             font-size: 16px;
         }
 
-        button {
+        button 
+        {
             width: 100%;
             padding: 12px;
             background-color: #f47c2c;
@@ -124,23 +130,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             transition: background-color 0.3s ease;
         }
 
-        button:hover {
+        button:hover 
+        {
             background-color: #da6d23;
         }
 
-        .message {
+        .message 
+        {
             margin-top: 20px;
             padding: 15px;
             border-radius: 10px;
             font-weight: bold;
         }
 
-        .success {
+        .success 
+        {
             background-color: #4caf50;
             color: #000;
         }
 
-        .error {
+        .error 
+        {
             background-color: #ff3a3a;
             color: #000;
         }
