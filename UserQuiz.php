@@ -1,9 +1,10 @@
 <?php
 session_start();
-require_once("connection.php"); 
+require_once("connection.php");
 
 $code = $_GET['code'] ?? '';
 if (!$code) die("Oturum kodu eksik.");
+$sessionCode = $code;
 
 $stmt = $conn->prepare("SELECT id FROM sessions WHERE session_code = ?");
 $stmt->bind_param("s", $code);
@@ -14,13 +15,10 @@ $session_id = $row['id'];
 $stmt->close();
 
 $tokenName = "attendee_token_$session_id";
-if (!isset($_COOKIE[$tokenName])) 
-{
+if (!isset($_COOKIE[$tokenName])) {
     $token = bin2hex(random_bytes(16));
     setcookie($tokenName, $token, time()+86400, "/");
-} 
-else 
-{
+} else {
     $token = $_COOKIE[$tokenName];
 }
 
@@ -39,49 +37,12 @@ $quizStmt->close();
     <meta charset="UTF-8">
     <title>Quiz</title>
     <style>
-        body 
-        { 
-            font-family: Arial, sans-serif; 
-            background: #f3f3f3; 
-            padding: 40px;
-        }
-        .quiz-box 
-        { background: #fff; 
-            border-radius: 8px; 
-            padding: 35px; 
-            max-width: 420px; 
-            margin: 45px auto; 
-            box-shadow:0 2px 12px #bbb; 
-            margin-bottom: 35px;
-        }
-        h2
-        { 
-            color: #2d4059; 
-        }
-        .answer-btn 
-        { 
-            display:block;
-            width:100%;
-            margin-top:14px;
-            padding:15px 0;
-            background:#4285f4;
-            color:#fff;
-            border:none;
-            border-radius:5px;
-            font-size:18px;
-            cursor:pointer;
-            font-weight:bold;
-            transition:.2s;
-        }
-        .answer-btn:disabled 
-        {
-            background: #ccc; 
-            cursor: default; 
-        }
-        .chosen 
-        { 
-            background: #4caf50 !important; 
-        }
+        body { font-family: Arial, sans-serif; background: #f3f3f3; padding: 40px;}
+        .quiz-box { background: #fff; border-radius: 8px; padding: 35px; max-width: 420px; margin: 45px auto; box-shadow:0 2px 12px #bbb; margin-bottom: 35px;}
+        h2 { color: #2d4059; }
+        .answer-btn { display:block;width:100%;margin-top:14px;padding:15px 0;background:#4285f4;color:#fff;border:none;border-radius:5px;font-size:18px;cursor:pointer;font-weight:bold;transition:.2s;}
+        .answer-btn:disabled { background: #ccc; cursor: default; }
+        .chosen { background: #4caf50 !important; }
     </style>
 </head>
 <body>
@@ -99,14 +60,12 @@ $quizStmt->close();
                 $stmt->close();
 
                 $options = [];
-                if ($quiz['type'] == "coktan") 
-                {
+                if ($quiz['type'] == "coktan") {
                     $optQ = $conn->prepare("SELECT * FROM quiz_options WHERE quiz_id = ? ORDER BY option_key");
                     $optQ->bind_param("i", $quiz['id']);
                     $optQ->execute();
                     $optRes = $optQ->get_result();
-                    while ($opt = $optRes->fetch_assoc()) 
-                    {
+                    while ($opt = $optRes->fetch_assoc()) {
                         $options[$opt['option_key']] = $opt['option_text'];
                     }
                     $optQ->close();
@@ -116,14 +75,11 @@ $quizStmt->close();
                     <div style="margin-top:24px;">
                         <b>Cevabınız:</b>
                         <?php
-                        if ($quiz['type'] == "coktan") 
-                        {
+                        if ($quiz['type'] == "coktan") {
                             $cevapKey = $old['answer'];
                             $cevapMetin = isset($options[$cevapKey]) ? $cevapKey . ' - ' . $options[$cevapKey] : $cevapKey;
                             echo htmlspecialchars($cevapMetin);
-                        } 
-                        else 
-                        {
+                        } else {
                             echo ($old['answer'] == "dogru" ? "Doğru" : "Yanlış");
                         }
                         ?>
@@ -150,31 +106,42 @@ $quizStmt->close();
     <?php endif; ?>
 
 <script>
-function submitQuiz(quiz_id, ans, btn) 
-{
+function submitQuiz(quiz_id, ans, btn) {
     let parent = btn.parentElement;
     parent.querySelectorAll('.answer-btn').forEach(b => b.disabled = true);
 
-    fetch("submitQuizAnswer.php", 
-    {
+    fetch("submitQuizAnswer.php", {
         method: "POST",
         headers: {'Content-Type': 'application/x-www-form-urlencoded'},
         body: "quiz_id=" + quiz_id + "&answer=" + encodeURIComponent(ans)
     }).then(r => r.json())
-    .then(d => 
-    {
-        if (d.success) 
-        {
+    .then(d => {
+        if (d.success) {
             alert("Cevabınız kaydedildi!");
             location.reload();
-        } 
-        else 
-        {
+        } else {
             alert("Hata: " + (d.message || ''));
             parent.querySelectorAll('.answer-btn').forEach(b => b.disabled = false);
         }
     });
 }
+// OTURUMU CANLI MI KONTROL
+function checkSessionAlive() {
+    fetch('isSessionAlive.php?code=<?= htmlspecialchars($sessionCode) ?>')
+    .then(r => r.json())
+    .then(data => {
+        if (!data.exists) {
+            document.body.innerHTML = `
+                <div style="text-align:center;padding:120px;font-size:2rem;color:#c00;">
+                  Oturum sonlandırıldı. Ana sayfaya yönlendiriliyorsunuz...
+                </div>`;
+            setTimeout(function() {
+                window.location.href = 'anasayfa.php';
+            }, 3000);
+        }
+    });
+}
+setInterval(checkSessionAlive, 2500);
 </script>
 </body>
 </html>
