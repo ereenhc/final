@@ -42,7 +42,6 @@ if (isset($_POST['update_user'])) {
 <head>
   <meta charset="UTF-8">
   <title>Moderatör Paneli</title>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
     body { font-family: Arial, sans-serif; margin: 0; background: #f0f0f0; }
     .tabs-container { display: flex; align-items: center; background: #fff; border-bottom: 1px solid #ccc; }
@@ -51,7 +50,6 @@ if (isset($_POST['update_user'])) {
     .tab.active { background: #f47c2c; color: white; font-weight: bold; }
     .tab-content { display: none; padding: 20px; background: #fff; }
     .tab-content.active { display: block; }
-    .chart-container { width: 80%; margin: auto; }
     table { margin: 40px auto; border-collapse: collapse; width: 60%; }
     th, td { padding: 10px 15px; border: 1px solid #ccc; text-align: center; }
     th { background-color: #eee; }
@@ -60,6 +58,7 @@ if (isset($_POST['update_user'])) {
     button { background: #f47c2c; color: white; border: none; padding: 6px 12px; cursor: pointer; border-radius: 4px; }
     .saveBtn, .cancelBtn { display: none; margin-left: 3px; }
     .edit-mode input, .edit-mode select { width: 80px; }
+    .edit-mode [data-field="uye_mail"] input { width: 220px !important; }
     .header-actions {
       margin-left: auto;
       display: flex;
@@ -88,10 +87,8 @@ if (isset($_POST['update_user'])) {
 <!-- SEKME MENÜSÜ + SAĞ ÜST BUTON -->
 <div class="tabs-container">
   <div class="tabs">
-    <div class="tab active" onclick="showTab('panic')">Panic</div>
-    <div class="tab" onclick="showTab('chatwall')">Chatwall</div>
+    <div class="tab active" onclick="showTab('chatwall')">Chatwall</div>
     <div class="tab" onclick="showTab('quiz')">Quiz</div>
-    <div class="tab" onclick="showTab('session')">Session</div>
     <div class="tab" onclick="showTab('users')">Kullanıcılar</div>
   </div>
   <div class="header-actions">
@@ -99,32 +96,14 @@ if (isset($_POST['update_user'])) {
   </div>
 </div>
 
-<!-- PANIC SEKME İÇERİĞİ -->
-<div id="panic" class="tab-content active">
-  <h1>Panik Geri Bildirimleri (Oturum: <?= htmlspecialchars($session_id) ?>)</h1>
-  <div class="chart-container">
-    <canvas id="panicChart"></canvas>
-  </div>
-  <table id="feedbackTable">
-    <tr><th>Geri Bildirim Türü</th><th>Adet</th></tr>
-    <tr><td>Çok hızlı</td><td id="too_fast">0</td></tr>
-    <tr><td>Çok yavaş</td><td id="too_slow">0</td></tr>
-    <tr><td>Çok sessiz</td><td id="too_quiet">0</td></tr>
-    <tr><td>Örnek verin</td><td id="example">0</td></tr>
-    <tr><td>Son slayt tekrar</td><td id="last_slide">0</td></tr>
-    <tr><td>Panik</td><td id="panic">0</td></tr>
-  </table>
-</div>
-
 <!-- CHATWALL SEKME İÇERİĞİ -->
-<div id="chatwall" class="tab-content">
+<div id="chatwall" class="tab-content active">
   <h2>Chatwall Mesajları (Oturum: <?= htmlspecialchars($session_id) ?>)</h2>
   <ul id="messageList"></ul>
 </div>
 
-<!-- DİĞER SEKME BOŞLUKLARI -->
+<!-- QUIZ SEKME BOŞLUĞU -->
 <div id="quiz" class="tab-content"><p>Quiz gelecektir.</p></div>
-<div id="session" class="tab-content"><p>Session yönetimi gelecektir.</p></div>
 
 <!-- KULLANICI YÖNETİMİ SEKME İÇERİĞİ -->
 <div id="users" class="tab-content">
@@ -154,44 +133,8 @@ function showTab(tabId) {
   if (tabId === "users") loadUsers();
 }
 
-// === PANIC CHART ===
-const sessionId = <?= json_encode($session_id) ?>;
-const chartCtx = document.getElementById('panicChart').getContext('2d');
-const panicChart = new Chart(chartCtx, {
-  type: 'bar',
-  data: {
-    labels: ['Çok hızlı', 'Çok yavaş', 'Çok sessiz', 'Örnek verin', 'Son slayt tekrar', 'Panik'],
-    datasets: [{
-      label: 'Geri Bildirim Sayısı',
-      data: [0, 0, 0, 0, 0, 0],
-      backgroundColor: '#f47c2c'
-    }]
-  },
-  options: {
-    scales: { y: { beginAtZero: true, stepSize: 1 } }
-  }
-});
-
-function updatePanicData() {
-  fetch(`get_feedback_data.php?session_id=${sessionId}`)
-    .then(res => res.json())
-    .then(data => {
-      if (data.error) return;
-      const types = ['too_fast', 'too_slow', 'too_quiet', 'example', 'last_slide', 'panic'];
-      const chartData = [];
-
-      types.forEach(type => {
-        const count = data[type] || 0;
-        chartData.push(count);
-        document.getElementById(type).textContent = count;
-      });
-
-      panicChart.data.datasets[0].data = chartData;
-      panicChart.update();
-    });
-}
-
 // === CHATWALL ===
+const sessionId = <?= json_encode($session_id) ?>;
 function getChatMessages() {
   fetch(`getChatMessages.php?session_id=${sessionId}`)
     .then(res => res.json())
@@ -225,16 +168,12 @@ function deleteMessage(id, button) {
 }
 
 setInterval(() => {
-  updatePanicData();
   getChatMessages();
 }, 1000);
 
-updatePanicData();
 getChatMessages();
 
-
 // === KULLANICI YÖNETİMİ ===
-
 function loadUsers() {
   fetch('?api=users')
     .then(res => res.json())
@@ -295,9 +234,12 @@ function editUser(btn) {
       span.innerHTML = `<input type="text" value="${val}">`;
     }
   });
-  tr.querySelector(".saveBtn").style.display = "";
-  tr.querySelector(".cancelBtn").style.display = "";
-  btn.style.display = "none";
+  // Sadece e-mail inputunu genişlet
+  tr.querySelector('[data-field="uye_mail"] input').style.width = "220px";
+
+  // Kaydet ve Vazgeç butonlarını göster
+  tr.querySelectorAll(".saveBtn, .cancelBtn").forEach(b=>b.style.display="inline-block");
+  btn.style.display = "none"; // Düzenle butonu kaybolsun
 }
 
 function cancelEdit(btn) {
