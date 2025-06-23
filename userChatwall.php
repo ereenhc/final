@@ -183,7 +183,6 @@ else
     <script>
         const sessionId = "<?php echo htmlspecialchars($sessionId); ?>";
         const usernameKey = "cw_username_" + sessionId;
-        // Username seçimi
         window.addEventListener('DOMContentLoaded', function() 
         {
             let uname = localStorage.getItem(usernameKey);
