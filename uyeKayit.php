@@ -15,20 +15,21 @@ if (isset($_POST['theme'])) {
 $message = "";
 $messageType = "";
 
-if (isset($_POST["kaydet"])) {
-  // --- sunucu tarafı doğrulama -----------------------------------------
+if (isset($_POST["kaydet"])) 
+{
   $uye_adi    = trim($_POST["uye_adi"]);
   $uye_soyadi = trim($_POST["uye_soyadi"]);
   $uye_mail   = $_POST["uye_mail"];
   $uye_sifre  = password_hash($_POST["uye_sifre"], PASSWORD_DEFAULT);
 
-  // Sadece harf (Türk‐çe karakterler + boşluk) kontrolü  // <<< değişiklik
   $onlyLetters = '/^[\p{L}\s]+$/u';
-  if (!preg_match($onlyLetters, $uye_adi) || !preg_match($onlyLetters, $uye_soyadi)) {
+  if (!preg_match($onlyLetters, $uye_adi) || !preg_match($onlyLetters, $uye_soyadi)) 
+  {
       $message     = "Ad ve Soyad alanlarına yalnızca harf girebilirsiniz.";
       $messageType = "error";
-  } else {
-      // e-posta zaten var mı?
+  } 
+  else 
+  {
       $sql = "SELECT 1 FROM uyeler WHERE uye_mail = ?";
       $stmt = $conn->prepare($sql);
       $stmt->bind_param("s", $uye_mail);
@@ -280,8 +281,8 @@ if (isset($_POST["kaydet"])) {
     }
   </style>
   <script>
-    // İstemci tarafı kontrol  ------------------------------------------- // <<< değişiklik
-    function validateForm() {
+    function validateForm() 
+    {
       const nameRegex = /^[\p{L}\s]+$/u;
       const form      = document.forms[0];
       const ad        = form.uye_adi.value.trim();
@@ -308,7 +309,6 @@ if (isset($_POST["kaydet"])) {
         </div>
       <?php endif; ?>
 
-      <!-- pattern ve title öznitelikleri eklendi  // <<< değişiklik -->
       <form action="" method="post" onsubmit="return validateForm();">
         <input type="text" name="uye_adi"
                pattern="[\p{L}\s]+"
