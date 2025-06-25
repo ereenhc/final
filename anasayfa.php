@@ -381,7 +381,7 @@ if (isset($_SESSION["giris_basarili"]) && $_SESSION["giris_basarili"] === true)
 
   <footer>
     <h3><?= $language === 'tr' ? 'İletişim' : 'Contact' ?></h3>
-    <p><?= $language === 'tr' ? 'E-posta: destek@questionlive.com' : 'Email: destek@questionlive.com' ?></p>
+    <p><?= $language === 'tr' ? 'E-posta: destek.questionlive@gmail.com' : 'Email: destek.questionlive@gmail.com' ?></p>
     <p><?= $language === 'tr' ? 'Telefon: +90 555 123 4567' : 'Phone: +90 555 123 4567' ?></p>
     <p><?= $language === 'tr' ? 'Adres: İstanbul, Türkiye' : 'Address: Istanbul, Turkey' ?></p>
     <div>
