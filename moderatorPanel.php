@@ -48,70 +48,82 @@ if (isset($_POST['update_user']))
     <meta charset="UTF-8">
     <title>Moderatör Paneli</title>
     <style>
-        body {
+        body 
+        {
             font-family: Arial, sans-serif;
             margin: 0;
             background: #f0f0f0;
         }
 
-        .tabs-container {
+        .tabs-container 
+        {
             display: flex;
             align-items: center;
             background: #fff;
             border-bottom: 1px solid #ccc;
         }
 
-        .tabs {
+        .tabs 
+        {
             display: flex;
         }
 
-        .tab {
+        .tab 
+        {
             padding: 14px 24px;
             cursor: pointer;
             border-right: 1px solid #ddd;
         }
 
-        .tab.active {
+        .tab.active 
+        {
             background: #f47c2c;
             color: white;
             font-weight: bold;
         }
 
-        .tab-content {
+        .tab-content 
+        {
             display: none;
             padding: 20px;
             background: #fff;
         }
 
-        .tab-content.active {
+        .tab-content.active 
+        {
             display: block;
         }
 
-        table {
+        table 
+        {
             margin: 40px auto;
             border-collapse: collapse;
             width: 60%;
         }
 
         th,
-        td {
+        td 
+        {
             padding: 10px 15px;
             border: 1px solid #ccc;
             text-align: center;
         }
 
-        th {
+        th 
+        {
             background-color: #eee;
         }
 
-        ul#messageList {
+        ul#messageList 
+        {
             list-style: none;
             padding: 0;
             width: 80%;
             margin: 20px auto;
         }
 
-        ul#messageList li {
+        ul#messageList li 
+        {
             background: #f9f9f9;
             margin-bottom: 10px;
             padding: 10px;
@@ -120,7 +132,8 @@ if (isset($_POST['update_user']))
             justify-content: space-between;
         }
 
-        button {
+        button 
+        {
             background: #f47c2c;
             color: white;
             border: none;
@@ -130,28 +143,33 @@ if (isset($_POST['update_user']))
         }
 
         .saveBtn,
-        .cancelBtn {
+        .cancelBtn 
+        {
             display: none;
             margin-left: 3px;
         }
 
         .edit-mode input,
-        .edit-mode select {
+        .edit-mode select 
+        {
             width: 80px;
         }
 
-        .edit-mode [data-field="uye_mail"] input {
+        .edit-mode [data-field="uye_mail"] input 
+        {
             width: 220px !important;
         }
 
-        .header-actions {
+        .header-actions 
+        {
             margin-left: auto;
             display: flex;
             align-items: center;
             padding-right: 32px;
         }
 
-        .go-home-btn {
+        .go-home-btn 
+        {
             background: #2e8b57;
             color: #fff;
             border: none;
@@ -164,7 +182,8 @@ if (isset($_POST['update_user']))
             transition: background 0.2s;
         }
 
-        .go-home-btn:hover {
+        .go-home-btn:hover 
+        {
             background: #226743;
         }
     </style>
@@ -241,7 +260,8 @@ if (isset($_POST['update_user']))
                 });
         }
 
-        function deleteMessage(id, button) {
+        function deleteMessage(id, button) 
+        {
             fetch("deleteMessage.php", {
                 method: "POST",
                 headers: {
@@ -251,25 +271,29 @@ if (isset($_POST['update_user']))
             })
                 .then(res => res.json())
                 .then(result => {
-                    if (result.success) {
+                    if (result.success) 
+                    {
                         button.parentElement.innerHTML = "<em>Mesaj silindi</em>";
                     }
                 });
         }
 
-        setInterval(() => {
+        setInterval(() => 
+        {
             getChatMessages();
         }, 1000);
 
         getChatMessages();
 
-        function loadUsers() {
+        function loadUsers() 
+        {
             fetch('?api=users')
                 .then(res => res.json())
                 .then(users => {
                     const tbody = document.querySelector("#usersTable tbody");
                     tbody.innerHTML = '';
-                    users.forEach(user => {
+                    users.forEach(user => 
+                    {
                         tbody.innerHTML += `
                             <tr data-id="${user.uye_id}">
                                 <td>${user.uye_id}</td>
@@ -289,26 +313,33 @@ if (isset($_POST['update_user']))
                 });
         }
 
-        function deleteUser(id, btn) {
+        function deleteUser(id, btn) 
+        {
             if (!confirm("Kullanıcı silinsin mi?")) return;
-            fetch("", {
+            fetch("", 
+            {
                 method: "POST",
-                headers: {
+                headers: 
+                {
                     "Content-Type": "application/x-www-form-urlencoded"
                 },
                 body: "delete_user_id=" + id
             })
                 .then(res => res.json())
-                .then(data => {
-                    if (data.success) {
+                .then(data => 
+                {
+                    if (data.success) 
+                    {
                         btn.closest("tr").remove();
-                    } else {
+                    } else 
+                    {
                         alert("Silinemedi.");
                     }
                 });
         }
 
-        function editUser(btn) {
+        function editUser(btn) 
+        {
             const tr = btn.closest('tr');
             tr.classList.add('edit-mode');
 
@@ -316,7 +347,8 @@ if (isset($_POST['update_user']))
                 const field = span.dataset.field;
                 let val = span.textContent;
 
-                if (field === "is_admin") {
+                if (field === "is_admin") 
+                {
                     span.innerHTML = `
                         <select>
                             <option value="0"${val.trim() == "Hayır" ? " selected" : ""}>Hayır</option>
@@ -335,18 +367,21 @@ if (isset($_POST['update_user']))
             btn.style.display = "none";
         }
 
-        function cancelEdit(btn) {
+        function cancelEdit(btn) 
+        {
             loadUsers();
         }
 
-        function saveUser(id, btn) {
+        function saveUser(id, btn) 
+        {
             const tr = btn.closest('tr');
             const fields = {};
 
             tr.querySelectorAll('.editable').forEach(span => 
             {
                 const field = span.dataset.field;
-                if (field === "is_admin") {
+                if (field === "is_admin") 
+                {
                     fields[field] = span.querySelector('select').value;
                 } else {
                     fields[field] = span.querySelector('input').value;
@@ -355,18 +390,23 @@ if (isset($_POST['update_user']))
 
             fields.uye_id = id;
 
-            fetch("", {
+            fetch("", 
+            {
                 method: "POST",
-                headers: {
+                headers: 
+                {
                     "Content-Type": "application/x-www-form-urlencoded"
                 },
                 body: "update_user=" + encodeURIComponent(JSON.stringify(fields))
             })
                 .then(res => res.json())
-                .then(data => {
-                    if (data.success) {
+                .then(data => 
+                {
+                    if (data.success) 
+                    {
                         loadUsers();
-                    } else {
+                    } else 
+                    {
                         alert("Güncellenemedi!");
                     }
                 });

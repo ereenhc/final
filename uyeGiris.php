@@ -35,8 +35,7 @@ if (isset($_POST["giris"]))
       $_SESSION["uye_adi"] = $user["uye_adi"];
       $_SESSION["uye_soyadi"] = $user["uye_soyadi"];
       $_SESSION["uye_mail"] = $user["uye_mail"];
-      $_SESSION["giris_basarili"] = true; //DENEME
-      // ADMIN KONTROLÜ EKLENDİ
+      $_SESSION["giris_basarili"] = true;
       if (isset($user["is_admin"]) && $user["is_admin"] == 1)
       {
         $_SESSION["is_admin"] = 1;

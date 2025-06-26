@@ -12,6 +12,7 @@ $result = $stmt->get_result();
 while ($row = $result->fetch_assoc()) 
 {
     $is_mod = isset($row['is_mod']) && $row['is_mod'] == 1;
+
     $user_label = htmlspecialchars($row['user_name']);
 
     if ($is_mod) 

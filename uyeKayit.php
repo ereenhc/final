@@ -36,19 +36,24 @@ if (isset($_POST["kaydet"]))
       $stmt->execute();
       $result = $stmt->get_result();
 
-      if ($result->num_rows > 0) {
+      if ($result->num_rows > 0) 
+      {
           $message     = "Bu kullanıcı zaten mevcut.";
           $messageType = "error";
-      } else {
+      } else 
+      {
           $sql = "INSERT INTO uyeler (uye_adi, uye_soyadi, uye_mail, uye_sifre)
                   VALUES (?, ?, ?, ?)";
           $stmt = $conn->prepare($sql);
           $stmt->bind_param("ssss", $uye_adi, $uye_soyadi, $uye_mail, $uye_sifre);
 
-          if ($stmt->execute()) {
+          if ($stmt->execute()) 
+          {
               $message     = "Kullanıcı başarıyla eklendi.";
               $messageType = "success";
-          } else {
+          } 
+          else 
+          {
               $message     = "Hata: " . $stmt->error;
               $messageType = "error";
           }

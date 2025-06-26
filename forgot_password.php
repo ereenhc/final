@@ -1,11 +1,11 @@
 <?php
 session_start();
-require_once("connection.php"); // veritabanı baglantisi
+require_once("connection.php"); 
 
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
-require 'vendor/autoload.php'; // composer ile PHPMailer yuklediysen burasi dogru olmali
+require 'vendor/autoload.php'; 
 
 $message = "";
 
@@ -13,7 +13,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST')
 {
     $email = $_POST['email'];
 
-    // Kullanicinin e-posta adresi veritabaninda var mi kontrol et
+   
     $stmt = $conn->prepare("SELECT uye_id FROM uyeler WHERE uye_mail = ?");
     $stmt->bind_param("s", $email);
     $stmt->execute();
@@ -23,9 +23,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST')
     {
         $user = $result->fetch_assoc();
 
-        // Token olustur (random ve benzersiz)
+ 
         $token = bin2hex(random_bytes(50));
-        $expires = date("U") + 1800; // 30 dakika gecerli
+        $expires = date("U") + 1800; 
 
         // Veritabanina token kaydet
         $stmt = $conn->prepare("INSERT INTO password_resets (uye_id, token, expires) VALUES (?, ?, ?)");
@@ -36,15 +36,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST')
 
 
 
-        // PHPMailer ile mail gonder
+       
         $mail = new PHPMailer(true);
 
         try {
             $mail->isSMTP();
             $mail->Host       = 'smtp.gmail.com';
             $mail->SMTPAuth   = true;
-            $mail->Username   = 'destek.questionlive@gmail.com'; // Gmail adresin
-            $mail->Password   = 'zqcv thsq jdhy jrdw'; // Gmail uygulama sifren
+            $mail->Username   = 'destek.questionlive@gmail.com';
+            $mail->Password   = 'zqcv thsq jdhy jrdw'; 
             $mail->SMTPSecure = 'tls';
             $mail->Port       = 587;
 
