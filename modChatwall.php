@@ -316,6 +316,7 @@ else
             .then(resp => 
             {
                 if(resp.success) 
+                
                 {
                     document.getElementById('message').value = '';
                     loadMessages();

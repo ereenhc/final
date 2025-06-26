@@ -323,7 +323,9 @@ if (isset($_POST['update_user']))
                             <option value="1"${val.trim() == "Evet" ? " selected" : ""}>Evet</option>
                         </select>
                     `;
-                } else {
+                }
+                else 
+                {
                     span.innerHTML = `<input type="text" value="${val}">`;
                 }
             });
@@ -341,7 +343,8 @@ if (isset($_POST['update_user']))
             const tr = btn.closest('tr');
             const fields = {};
 
-            tr.querySelectorAll('.editable').forEach(span => {
+            tr.querySelectorAll('.editable').forEach(span => 
+            {
                 const field = span.dataset.field;
                 if (field === "is_admin") {
                     fields[field] = span.querySelector('select').value;

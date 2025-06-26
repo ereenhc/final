@@ -1,64 +1,51 @@
 <?php
 require_once("connection.php");
 
-$session_code = $_GET['session_code'];
+$session_code = $_GET['session_code'] ?? '';
+$is_mod = isset($_GET['mod']) ? true : false;
+
 $stmt = $conn->prepare("SELECT id FROM sessions WHERE session_code = ?");
 $stmt->bind_param("s", $session_code);
 $stmt->execute();
 $res = $stmt->get_result();
-if (!$row = $res->fetch_assoc()) exit;
-$session_id = $row['id'];
+if (!($row = $res->fetch_assoc())) {
+    die("Oturum bulunamadı.");
+}
+$session_id = (int)$row['id'];
 
-$quizQ = $conn->prepare("SELECT * FROM quiz WHERE session_id = ? ORDER BY created_at DESC LIMIT 10");
-$quizQ->bind_param("i", $session_id);
-$quizQ->execute();
-$quizRes = $quizQ->get_result();
+$stmt = $conn->prepare("SELECT * FROM quiz WHERE session_id = ? ORDER BY quiz_created_at DESC");
+$stmt->bind_param("i", $session_id);
+$stmt->execute();
+$res = $stmt->get_result();
 
-while ($quiz = $quizRes->fetch_assoc()) 
-{
+while ($quiz = $res->fetch_assoc()) {
     echo '<div class="quiz-item">';
-    echo '<b>' . htmlspecialchars($quiz['question']) . '</b><br>';
+    echo '<strong>' . htmlspecialchars($quiz['question']) . '</strong><br>';
 
-    if ($quiz['type'] == "coktan") 
-    {
-        $optQ = $conn->prepare("SELECT * FROM quiz_options WHERE quiz_id = ?");
-        $optQ->bind_param("i", $quiz['id']);
-        $optQ->execute();
-        $opts = $optQ->get_result();
-
-        $countQ = $conn->prepare("SELECT answer, COUNT(*) as c FROM quiz_answers WHERE quiz_id = ? GROUP BY answer");
-        $countQ->bind_param("i", $quiz['id']);
-        $countQ->execute();
-        $counts = [];
-        $r = $countQ->get_result();
-        while($row2 = $r->fetch_assoc()) $counts[$row2['answer']] = $row2['c'];
-
-        while ($opt = $opts->fetch_assoc()) 
-        {
-            $val = $opt['option_key'];
-            $cnt = isset($counts[$val]) ? $counts[$val] : 0;
-            echo '<button class="option-btn" type="button" disabled>'
-                . htmlspecialchars($val) . ': ' . htmlspecialchars($opt['option_text']) .
-                ' <span class="count">'.$cnt.' kişi</span></button><br>';
+    // Medya gösterimi
+    if (!empty($quiz['media_path'])) {
+        $mediaPath = htmlspecialchars($quiz['media_path']);
+        $ext = strtolower(pathinfo($mediaPath, PATHINFO_EXTENSION));
+        if (in_array($ext, ['mp4', 'webm'])) {
+            echo '<video controls width="100%" style="margin-top:10px;"><source src="' . $mediaPath . '" type="video/' . $ext . '"></video>';
+        } else {
+            echo '<img src="' . $mediaPath . '" alt="soru görseli" style="margin-top:10px; max-width:100%; border-radius:8px;">';
         }
     }
-    else 
-    { 
-        $countQ = $conn->prepare("SELECT answer, COUNT(*) as c FROM quiz_answers WHERE quiz_id = ? GROUP BY answer");
-        $countQ->bind_param("i", $quiz['id']);
-        $countQ->execute();
-        $counts = [];
-        $r = $countQ->get_result();
-        while($row2 = $r->fetch_assoc()) $counts[strtolower($row2['answer'])] = $row2['c'];
 
-        foreach (['dogru'=>'Doğru', 'yanlis'=>'Yanlış'] as $key => $label) 
-        {
-            $cnt = isset($counts[$key]) ? $counts[$key] : 0;
-            echo '<button class="option-btn" type="button" disabled>'
-                . htmlspecialchars($label) .
-                ' <span class="count">'.$cnt.' kişi</span></button>';
+    if ($quiz['type'] === 'coktan') {
+        $options = ['A', 'B', 'C', 'D'];
+        foreach ($options as $opt) {
+           $a = isset($_POST["A"]) ? $_POST["A"] : '';
+            if (!empty($val)) {
+                echo '<div class="option-btn">' . $opt . ') ' . htmlspecialchars($val) . '</div>';
+            }
         }
+    } else {
+        echo '<div class="option-btn">Doğru</div>';
+        echo '<div class="option-btn">Yanlış</div>';
     }
+
     echo '</div>';
 }
 ?>

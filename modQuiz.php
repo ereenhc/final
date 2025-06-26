@@ -321,7 +321,7 @@ $sessionCode = $_SESSION['current_session_code'];
             <br>
             <button id="continue-btn" class="submit-btn" style="margin-top:25px; margin-left:70px">Devam Et</button>
         </div>
-        <form id="question-form">
+        <form id="question-form" enctype="multipart/form-data">
             <div id="question-area"></div>
             <button type="submit" class="submit-btn" style="margin-left:40px">Gönder</button>
         </form>
@@ -366,7 +366,11 @@ $sessionCode = $_SESSION['current_session_code'];
             <label style="margin-left:40px;"><input type="radio" name="correct" value="yanlis"> Yanlış</label>
         </div>`;
             }
-            questionArea.innerHTML = html;
+            html += `<div style="margin-top: 20px;">
+                <label>Resim / Video:</label><br>
+                <input type="file" id="media" accept="image/*,video/*">
+             </div>`;
+        questionArea.innerHTML = html;
         }
         questionForm.onsubmit = function(e) 
         {
@@ -376,6 +380,10 @@ $sessionCode = $_SESSION['current_session_code'];
             data.append('type', currentType);
             data.append('question', document.getElementById('soru').value);
             data.append('correct', document.querySelector('input[name="correct"]:checked').value);
+            let mediaFile = document.getElementById('media')?.files[0];
+            if (mediaFile) {
+                data.append('media', mediaFile);
+            }
             if (currentType === 'coktan') 
             {
                 data.append('A', document.getElementById('optA').value);
