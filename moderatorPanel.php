@@ -229,27 +229,32 @@ if (isset($_POST['update_user']))
     </div>
 
     <script>
-        function showTab(tabId) {
+        function showTab(tabId) 
+        {
             document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
             document.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
             document.querySelector(`.tab[onclick="showTab('${tabId}')"]`).classList.add('active');
             document.getElementById(tabId).classList.add('active');
 
-            if (tabId === "users") {
+            if (tabId === "users") 
+            {
                 loadUsers();
             }
         }
 
         const sessionId = <?= json_encode($session_id) ?>;
 
-        function getChatMessages() {
+        function getChatMessages() 
+        {
             fetch(`getChatMessages.php?session_id=${sessionId}`)
                 .then(res => res.json())
-                .then(messages => {
+                .then(messages => 
+                {
                     const list = document.getElementById("messageList");
                     list.innerHTML = "";
 
-                    messages.forEach(msg => {
+                    messages.forEach(msg => 
+                    {
                         const li = document.createElement("li");
                         li.innerHTML = `
                             <span>${msg.message}</span>
@@ -262,9 +267,11 @@ if (isset($_POST['update_user']))
 
         function deleteMessage(id, button) 
         {
-            fetch("deleteMessage.php", {
+            fetch("deleteMessage.php",
+            {
                 method: "POST",
-                headers: {
+                headers: 
+                {
                     "Content-Type": "application/x-www-form-urlencoded"
                 },
                 body: `id=${id}`
@@ -343,7 +350,8 @@ if (isset($_POST['update_user']))
             const tr = btn.closest('tr');
             tr.classList.add('edit-mode');
 
-            tr.querySelectorAll('.editable').forEach(span => {
+            tr.querySelectorAll('.editable').forEach(span => 
+            {
                 const field = span.dataset.field;
                 let val = span.textContent;
 
@@ -383,7 +391,8 @@ if (isset($_POST['update_user']))
                 if (field === "is_admin") 
                 {
                     fields[field] = span.querySelector('select').value;
-                } else {
+                } else 
+                {
                     fields[field] = span.querySelector('input').value;
                 }
             });
@@ -405,7 +414,8 @@ if (isset($_POST['update_user']))
                     if (data.success) 
                     {
                         loadUsers();
-                    } else 
+                    } 
+                    else 
                     {
                         alert("Güncellenemedi!");
                     }
