@@ -328,25 +328,35 @@ else
             });
         });
 
-        document.addEventListener('click', function(e) 
+      document.addEventListener('click', function(e) 
+{
+    if (e.target.classList.contains('delete-btn')) 
+    {
+        const msgId = e.target.getAttribute('data-messageid');
+        const sessionId = "<?php echo $_SESSION['session_id'] ?? ''; ?>";
+
+        if (confirm('Mesajı silmek istediğine emin misin?')) 
         {
-            if (e.target.classList.contains('delete-btn')) 
+            fetch('delete_message.php', 
             {
-                const msgId = e.target.getAttribute('data-id');
-                if (confirm('Mesajı silmek istediğine emin misin?')) 
-                {
-                    fetch('delete_message.php', 
-                    {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                        body: 'message_id=' + encodeURIComponent(msgId) + '&session_id=' + encodeURIComponent(sessionId)
-                    }).then(() => 
-                    {
-                        loadMessages();
-                    });
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: 'message_id=' + encodeURIComponent(msgId) +
+                      '&session_id=' + encodeURIComponent(sessionId)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    loadMessages();
+                } else {
+                    alert(data.message || 'Silme başarısız.');
                 }
-            }
-        });
+            })
+            .catch(err => console.error(err));
+        }
+    }
+});
+
     </script>
 </body>
 </html>
