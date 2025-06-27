@@ -84,9 +84,24 @@ $quizStmt->close();
         { 
             background: #4caf50 !important; 
         }
+        .logout-btn {
+            display: inline-block;
+            background: crimson;
+            color: white;
+            padding: 12px 20px;
+            text-decoration: none;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
+
+    <div style="text-align:right; max-width: 420px; margin: 0 auto;">
+        <a href="logout.php" class="logout-btn">Oturumdan Ayrıl</a>
+    </div>
+
     <?php if (empty($quizzes)): ?>
         <div class="quiz-box"><b>Bu oturumda hiç soru yok!</b></div>
     <?php else: ?>
