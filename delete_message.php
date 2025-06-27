@@ -1,16 +1,15 @@
 <?php
 require_once("connection.php");
 
-if (isset($_POST['id'])) 
-{
-    $id = intval($_POST['id']);
+$id = $_POST['message_id'] ?? null;
+
+if ($id) {
     $stmt = $conn->prepare("DELETE FROM chat_messages WHERE id = ?");
     $stmt->bind_param("i", $id);
     $stmt->execute();
-    echo "Silindi";
-} 
-else 
-{
-    echo "Geçersiz istek";
+    $stmt->close();
+
+    echo json_encode(["success" => true]);
+} else {
+    echo json_encode(["success" => false, "message" => "ID yok."]);
 }
-?>

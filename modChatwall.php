@@ -335,7 +335,7 @@ else
                 const msgId = e.target.getAttribute('data-id');
                 if (confirm('Mesajı silmek istediğine emin misin?')) 
                 {
-                    fetch('deleteMessage.php', 
+                    fetch('delete_message.php', 
                     {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },

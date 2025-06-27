@@ -1,58 +1,75 @@
 <?php
 require_once("connection.php");
 
-$session_code = $_GET['session_code'] ?? '';
-$is_mod = isset($_GET['mod']) ? true : false;
+$sessionCode = $_GET['session_code'] ?? '';
+$isMod = isset($_GET['mod']) ? true : false;
+
+if (empty($sessionCode)) {
+    exit("Oturum kodu belirtilmemiş.");
+}
 
 $stmt = $conn->prepare("SELECT id FROM sessions WHERE session_code = ?");
-$stmt->bind_param("s", $session_code);
+$stmt->bind_param("s", $sessionCode);
 $stmt->execute();
-$res = $stmt->get_result();
-if (!($row = $res->fetch_assoc())) 
-{
-    die("Oturum bulunamadı.");
+$result = $stmt->get_result();
+
+if ($result->num_rows === 0) {
+    exit("Geçersiz oturum kodu.");
 }
-$session_id = (int)$row['id'];
+$sessionId = $result->fetch_assoc()['id'];
+$stmt->close();
 
-$stmt = $conn->prepare("SELECT * FROM quiz WHERE session_id = ? ORDER BY quiz_created_at DESC");
-$stmt->bind_param("i", $session_id);
+$stmt = $conn->prepare("SELECT * FROM quiz WHERE session_id = ? ORDER BY created_at DESC");
+$stmt->bind_param("i", $sessionId);
 $stmt->execute();
-$res = $stmt->get_result();
+$result = $stmt->get_result();
 
-while ($quiz = $res->fetch_assoc()) 
-{
-    echo '<div class="quiz-item">';
-    echo '<strong>' . htmlspecialchars($quiz['question']) . '</strong><br>';
+while ($quiz = $result->fetch_assoc()) {
+    echo "<div class='quiz-item'>";
+    echo "<h3><strong>" . htmlspecialchars($quiz['question']) . "</strong></h3>";
 
-    if (!empty($quiz['media_path'])) 
-    {
-        $mediaPath = htmlspecialchars($quiz['media_path']);
-        $ext = strtolower(pathinfo($mediaPath, PATHINFO_EXTENSION));
-        if (in_array($ext, ['mp4', 'webm'])) 
-        {
-            echo '<video controls width="100%" style="margin-top:10px;"><source src="' . $mediaPath . '" type="video/' . $ext . '"></video>';
-        } else 
-        {
-            echo '<img src="' . $mediaPath . '" alt="soru görseli" style="margin-top:10px; max-width:100%; border-radius:8px;">';
+    $quizId = $quiz['id'];
+    $correct = strtolower(trim($quiz['correct_answer']));
+    $type = strtolower($quiz['type']);
+
+    if ($type === 'coktan') {
+      
+        $stmtOpt = $conn->prepare("SELECT option_key, option_text FROM quiz_options WHERE quiz_id = ?");
+        $stmtOpt->bind_param("i", $quizId);
+        $stmtOpt->execute();
+        $optResult = $stmtOpt->get_result();
+
+        while ($opt = $optResult->fetch_assoc()) {
+            $key = strtolower(trim($opt['option_key']));
+            $text = $opt['option_text'];
+
+            
+            $stmtCount = $conn->prepare("
+                SELECT COUNT(*) as total 
+                FROM quiz_answers 
+                WHERE quiz_id = ? AND LOWER(TRIM(selected_option)) = ?
+            ");
+            $stmtCount->bind_param("is", $quizId, $key);
+            $stmtCount->execute();
+            $countResult = $stmtCount->get_result()->fetch_assoc();
+            $voteCount = $countResult['total'] ?? 0;
+            $stmtCount->close();
+
+            $dogru = ($key === $correct) ? " <span style='color: green;'>✅ <strong>Bu şık doğrudur</strong></span>" : "";
+            echo "<p><strong>" . strtoupper($key) . ")</strong> " . htmlspecialchars($text) . "$dogru <span style='color: #555;'>($voteCount kişi)</span></p>";
         }
+
+        $stmtOpt->close();
+    } elseif ($type === 'dogruyanlis') {
+        $label = $correct === "dogru" ? "✔️ Doğru" : "❌ Yanlış";
+
+        $dogruSayisi = $conn->query("SELECT COUNT(*) AS c FROM quiz_answers WHERE quiz_id = $quizId AND LOWER(TRIM(selected_option)) = 'dogru'")->fetch_assoc()['c'];
+        $yanlisSayisi = $conn->query("SELECT COUNT(*) AS c FROM quiz_answers WHERE quiz_id = $quizId AND LOWER(TRIM(selected_option)) = 'yanlis'")->fetch_assoc()['c'];
+
+        echo "<p><strong>Doğru Cevap: </strong> <span style='color: green;'>$label</span></p>";
+        echo "<p><strong>İstatistik:</strong> ✔️ $dogruSayisi kişi | ❌ $yanlisSayisi kişi</p>";
     }
 
-    if ($quiz['type'] === 'coktan') 
-    {
-        $options = ['A', 'B', 'C', 'D'];
-        foreach ($options as $opt) {
-           $a = isset($_POST["A"]) ? $_POST["A"] : '';
-            if (!empty($val)) 
-            {
-                echo '<div class="option-btn">' . $opt . ') ' . htmlspecialchars($val) . '</div>';
-            }
-        }
-    } else 
-    {
-        echo '<div class="option-btn">Doğru</div>';
-        echo '<div class="option-btn">Yanlış</div>';
-    }
-
-    echo '</div>';
+    echo "</div>";
 }
 ?>
