@@ -1,18 +1,36 @@
 <?php
-include 'connection.php';
+require_once("connection.php");
 
-$session_id = $_GET['session_id'] ?? '';
+// GET parametresiyle session_id gelmeli
+$sessionId = $_GET["session_id"] ?? null;
 
-if ($session_id) 
-{
-    $stmt = $conn->prepare("SELECT user_name, message, created_at FROM chat_messages WHERE session_id = ? ORDER BY id ASC");
-    $stmt->bind_param("i", $session_id);
-    $stmt->execute();
-    $result = $stmt->get_result();
-
-    while ($row = $result->fetch_assoc()) 
-    {
-        echo "<div class='message'><strong>" . htmlspecialchars($row['user_name']) . ":</strong> " .
-            htmlspecialchars($row['message']) . " <small>(" . $row['created_at'] . ")</small></div>";
-    }
+if (!$sessionId) {
+    exit("session_id eksik.");
 }
+
+// O oturumdaki mesajları çek
+$stmt = $conn->prepare("
+    SELECT user_name, message, is_mod, created_at
+    FROM chat_messages
+    WHERE session_id = ?
+    ORDER BY created_at ASC
+");
+$stmt->bind_param("i", $sessionId);
+$stmt->execute();
+$result = $stmt->get_result();
+
+$html = "";
+
+while ($row = $result->fetch_assoc()) {
+    $user = htmlspecialchars($row["user_name"]);
+    $message = htmlspecialchars($row["message"]);
+    $time = date("H:i", strtotime($row["created_at"]));
+
+    $class = $row["is_mod"] ? "style='color:#e53935; font-weight:bold;'" : "";
+    $html .= "<div class='message'>
+                <span $class>[$time] $user:</span> 
+                <span style='margin-left:10px;'>$message</span>
+              </div>";
+}
+
+echo $html;

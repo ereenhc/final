@@ -1,26 +1,27 @@
 <?php
-require_once "connection.php";
+require_once("connection.php");
 
-$session_id = $_POST['session_id'] ?? null;
-$user_name = trim($_POST['user_name'] ?? '');
-$message = trim($_POST['message'] ?? '');
+// session_id alın
+$sessionId = $_POST["session_id"] ?? null;
+$userName = $_POST["user_name"] ?? null;
+$message = $_POST["message"] ?? null;
+$isMod = isset($_POST["is_mod"]) && $_POST["is_mod"] == 1 ? 1 : 0;
 
-if (preg_match('/mod|admin|yönetici/i', $user_name)) 
-{
-    http_response_code(400);
-    echo "Geçersiz isim.";
+if (!$sessionId || !$userName || !$message) {
+    echo json_encode([
+        "success" => false,
+        "message" => "Parametreler eksik!"
+    ]);
     exit;
 }
 
-if (!$session_id || !$user_name || !$message) 
-{
-    http_response_code(400);
-    echo "Eksik bilgi.";
-    exit;
-}
-
-$stmt = $conn->prepare("INSERT INTO chat_messages (session_id, user_name, message) VALUES (?, ?, ?)");
-$stmt->bind_param("iss", $session_id, $user_name, $message);
+// Mesajı kaydet
+$stmt = $conn->prepare("
+    INSERT INTO chat_messages (session_id, user_name, message, is_mod, created_at)
+    VALUES (?, ?, ?, ?, NOW())
+");
+$stmt->bind_param("issi", $sessionId, $userName, $message, $isMod);
 $stmt->execute();
+$stmt->close();
 
-echo "OK";
+echo json_encode(["success" => true]);

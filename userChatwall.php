@@ -2,12 +2,14 @@
 session_start();
 require_once("connection.php");
 
+
 $code = $_GET['code'] ?? null;
 if (!$code) {
     die("Oturum kodu eksik.");
 }
 $sessionCode = $code;
 
+// Oturum id'sini bul
 $stmt = $conn->prepare("SELECT id FROM sessions WHERE session_code = ?");
 $stmt->bind_param("s", $code);
 $stmt->execute();
@@ -19,19 +21,44 @@ $row = $result->fetch_assoc();
 $sessionId = $row['id'];
 $stmt->close();
 
-if (!isset($_COOKIE["attendee_token_$sessionId"])) 
-{
+// Kullanıcı adını session'da sakla
+$attendeeName = $_SESSION["attendee_name"] ?? null;
+
+// Eğer POST ile isim seçildiyse session'a kaydet
+if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["user_name"])) {
+    $attendeeName = $_POST["user_name"];
+    $_SESSION["attendee_name"] = $attendeeName;
+}
+
+// Boşsa anonim ata
+if (!$attendeeName) {
+    $attendeeName = "Anonim";
+}
+
+// Cookie token kontrolü
+$tokenName = "attendee_token_$sessionId";
+$token = $_COOKIE[$tokenName] ?? null;
+
+if (!$token) {
     $token = bin2hex(random_bytes(16));
-    setcookie("attendee_token_$sessionId", $token, time() + 86400, "/");
-    $stmt2 = $conn->prepare("INSERT IGNORE INTO session_attendees (session_id, attendee_token) VALUES (?, ?)");
-    $stmt2->bind_param("is", $sessionId, $token);
+    setcookie($tokenName, $token, time() + 86400, "/");
+
+    // Yeni kayıt
+    $stmt2 = $conn->prepare("
+        INSERT IGNORE INTO session_attendees (session_id, attendee_token, attendee_name, joined_at)
+        VALUES (?, ?, ?, NOW())
+    ");
+    $stmt2->bind_param("iss", $sessionId, $token, $attendeeName);
     $stmt2->execute();
     $stmt2->close();
-} else 
-{
-    $token = $_COOKIE["attendee_token_$sessionId"];
-    $stmt2 = $conn->prepare("INSERT IGNORE INTO session_attendees (session_id, attendee_token) VALUES (?, ?)");
-    $stmt2->bind_param("is", $sessionId, $token);
+} else {
+    // Token varsa attendee_name güncelle
+    $stmt2 = $conn->prepare("
+        UPDATE session_attendees
+        SET attendee_name = ?
+        WHERE session_id = ? AND attendee_token = ?
+    ");
+    $stmt2->bind_param("sis", $attendeeName, $sessionId, $token);
     $stmt2->execute();
     $stmt2->close();
 }
@@ -210,11 +237,33 @@ if (!isset($_COOKIE["attendee_token_$sessionId"]))
         {
             if (confirm('Oturumdan ayrılmak istediğinize emin misiniz?')) 
             {
-                document.cookie = `attendee_token_${sessionId}=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/`;
-               
-                localStorage.removeItem(usernameKey);
-               
-                window.location.href = 'anasayfa.php';
+                // Token'ı cookie'den al
+                const tokenName = "attendee_token_" + sessionId;
+                let tokenValue = null;
+
+                document.cookie.split(";").forEach(c => {
+                    const [name, value] = c.trim().split("=");
+                    if (name === tokenName) {
+                        tokenValue = value;
+                    }
+                });
+
+                fetch('leaveSession.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: 'session_id=' + encodeURIComponent(sessionId) +
+                          '&token=' + encodeURIComponent(tokenValue || "")
+                })
+                .then(r => r.json())
+                .then(data => {
+                    if (data.success) {
+                        document.cookie = `${tokenName}=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/`;
+                        localStorage.removeItem(usernameKey);
+                        window.location.href = 'anasayfa.php';
+                    } else {
+                        alert("Çıkış yapılamadı: " + (data.message || ""));
+                    }
+                });
             }
         });
 
@@ -242,7 +291,17 @@ if (!isset($_COOKIE["attendee_token_$sessionId"]))
                 return;
             }
             localStorage.setItem(usernameKey, uname);
-            lockUsername(uname);
+
+            fetch(location.href, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: 'user_name=' + encodeURIComponent(uname)
+            }).then(() => {
+                lockUsername(uname);
+                location.reload();
+            });
         });
 
         function lockUsername(uname) 
@@ -310,8 +369,6 @@ if (!isset($_COOKIE["attendee_token_$sessionId"]))
                         window.location.href = 'anasayfa.php';
                     }
                     , 3000);
-                    
-
                 }
             });
         }
