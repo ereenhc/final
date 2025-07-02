@@ -1,7 +1,7 @@
 <?php
 require_once("connection.php");
 
-$id = $_POST['message_id'] ?? null;
+$id = $_POST['id'] ?? null;
 
 if ($id) {
     $stmt = $conn->prepare("DELETE FROM chat_messages WHERE id = ?");

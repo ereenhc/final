@@ -332,7 +332,7 @@ else
 {
     if (e.target.classList.contains('delete-btn')) 
     {
-        const msgId = e.target.getAttribute('data-messageid');
+        const msgId = e.target.getAttribute('data-id');
         const sessionId = "<?php echo $_SESSION['session_id'] ?? ''; ?>";
 
         if (confirm('Mesajı silmek istediğine emin misin?')) 
@@ -341,7 +341,7 @@ else
             {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                body: 'message_id=' + encodeURIComponent(msgId) +
+                body: 'id=' + encodeURIComponent(msgId) +
                       '&session_id=' + encodeURIComponent(sessionId)
             })
             .then(response => response.json())
