@@ -28,12 +28,17 @@ while ($quiz = $result->fetch_assoc()) {
     echo "<div class='quiz-item'>";
     echo "<h3><strong>" . htmlspecialchars($quiz['question']) . "</strong></h3>";
 
+    // RESİM EKLENECEK YER:
+    if (!empty($quiz['image_path'])) {
+        echo "<img src='uploads/quiz_images/" . htmlspecialchars($quiz['image_path']) . "' 
+                   style='max-width: 200px; margin-top: 10px; margin-bottom: 10px;'><br>";
+    }
+
     $quizId = $quiz['id'];
     $correct = strtolower(trim($quiz['correct_answer']));
     $type = strtolower($quiz['type']);
 
     if ($type === 'coktan') {
-      
         $stmtOpt = $conn->prepare("SELECT option_key, option_text FROM quiz_options WHERE quiz_id = ?");
         $stmtOpt->bind_param("i", $quizId);
         $stmtOpt->execute();
@@ -43,7 +48,6 @@ while ($quiz = $result->fetch_assoc()) {
             $key = strtolower(trim($opt['option_key']));
             $text = $opt['option_text'];
 
-            
             $stmtCount = $conn->prepare("
                 SELECT COUNT(*) as total 
                 FROM quiz_answers 

@@ -2,8 +2,7 @@
 session_start();
 require_once("connection.php");
 
-if (!isset($_SESSION['current_session_code'])) 
-{
+if (!isset($_SESSION['current_session_code'])) {
     echo "<script>
             alert('Oturum kodu belirtilmedi.');
             window.location.href = 'createSession.php';
@@ -15,13 +14,11 @@ $sessionCode = $_SESSION['current_session_code'];
 ?>
 <!DOCTYPE html>
 <html lang="tr">
-
 <head>
     <meta charset="UTF-8">
     <title>Quiz (Mod)</title>
     <style>
-        body 
-        {
+        body {
             font-family: Arial, sans-serif;
             background: #faebd7;
             margin: 0;
@@ -29,9 +26,7 @@ $sessionCode = $_SESSION['current_session_code'];
             display: flex;
             min-height: 100vh;
         }
-
-        .sidebar 
-        {
+        .sidebar {
             width: 390px;
             background-color: rgb(61, 131, 184);
             border-right: 1px solid #ddd;
@@ -42,9 +37,7 @@ $sessionCode = $_SESSION['current_session_code'];
             flex-direction: column;
             align-items: flex-start;
         }
-
-        .logo 
-        {
+        .logo {
             display: flex;
             align-items: center;
             font-size: 30px;
@@ -52,16 +45,12 @@ $sessionCode = $_SESSION['current_session_code'];
             color: #f47c2c;
             margin-bottom: 60px;
         }
-
-        .logo-icon 
-        {
+        .logo-icon {
             font-size: 35px;
             margin-right: 5px;
             line-height: 1;
         }
-
-        .logo-button 
-        {
+        .logo-button {
             display: inline-block;
             background-color: rgba(244, 124, 44, 0.82);
             color: whitesmoke;
@@ -73,14 +62,10 @@ $sessionCode = $_SESSION['current_session_code'];
             transition: background-color 0.3s;
             font-size: 28px;
         }
-
-        .logo-button:hover 
-        {
+        .logo-button:hover {
             background-color: rgb(0, 62, 71);
         }
-
-        .mod-label 
-        {
+        .mod-label {
             color: #14234B;
             font-weight: bold;
             font-size: 1em;
@@ -90,20 +75,14 @@ $sessionCode = $_SESSION['current_session_code'];
             border-radius: 8px;
             letter-spacing: 1px;
         }
-
-        .menu 
-        {
+        .menu {
             width: 100%;
             border-collapse: collapse;
         }
-
-        .menu td 
-        {
+        .menu td {
             padding: 10px;
         }
-
-        .menu a 
-        {
+        .menu a {
             font-size: 30px;
             padding: 18px;
             display: flex;
@@ -113,48 +92,34 @@ $sessionCode = $_SESSION['current_session_code'];
             border-radius: 10px;
             background: #fff;
             box-shadow: 0 2px 6px rgba(0, 0, 0, .25);
-            box-sizing: border-box;
             text-decoration: none;
             font-weight: bold;
             color: #007BFF;
             transition: background .2s, box-shadow .2s;
         }
-
-        .menu a:hover 
-        {
+        .menu a:hover {
             background: #e0e0e0;
             box-shadow: 0 4px 8px rgba(0, 0, 0, .35);
         }
-
-        @media (max-width: 900px) 
-        {
-            .sidebar 
-            {
+        @media (max-width: 900px) {
+            .sidebar {
                 width: 160px;
                 padding: 15px 7px;
             }
-
-            .logo-button 
-            {
+            .logo-button {
                 font-size: 18px;
             }
-
-            .mod-label 
-            {
+            .mod-label {
                 font-size: .92em;
                 padding: 3px 8px;
                 margin-left: 8px;
             }
-
-            .menu a 
-            {
+            .menu a {
                 font-size: 18px;
                 padding: 10px;
             }
         }
-
-        .main-container 
-        {
+        .main-container {
             flex-grow: 1;
             display: flex;
             flex-direction: column;
@@ -162,15 +127,11 @@ $sessionCode = $_SESSION['current_session_code'];
             justify-content: flex-start;
             padding: 40px;
         }
-
-        h2 
-        {
+        h2 {
             text-align: center;
             margin-bottom: 20px;
         }
-
-        #add-question-btn 
-        {
+        #add-question-btn {
             background: #5cb85c;
             color: #fff;
             border: none;
@@ -180,15 +141,11 @@ $sessionCode = $_SESSION['current_session_code'];
             cursor: pointer;
             margin-top: 30px;
         }
-
-        #add-question-btn:hover 
-        {
+        #add-question-btn:hover {
             background: #409a40;
         }
-
         #question-form,
-        #select-type 
-        {
+        #select-type {
             display: none;
             margin: 24px 0;
             background: #f2f6fa;
@@ -196,10 +153,8 @@ $sessionCode = $_SESSION['current_session_code'];
             border-radius: 10px;
             box-shadow: 0 2px 12px rgba(61, 131, 184, 0.06);
         }
-
         #question-form input[type="text"],
-        #question-form textarea 
-        {
+        #question-form textarea {
             width: 98%;
             padding: 10px;
             margin-bottom: 14px;
@@ -207,25 +162,17 @@ $sessionCode = $_SESSION['current_session_code'];
             border-radius: 6px;
             border: 1px solid #bbb;
         }
-
-        .options-row 
-        {
+        .options-row {
             display: flex;
             gap: 8px;
         }
-
-        .options-row input[type="text"] 
-        {
+        .options-row input[type="text"] {
             width: 85%;
         }
-
-        .answer-radio 
-        {
+        .answer-radio {
             margin-right: 6px;
         }
-
-        .submit-btn 
-        {
+        .submit-btn {
             background: #ff8500;
             color: #fff;
             font-weight: bold;
@@ -235,30 +182,22 @@ $sessionCode = $_SESSION['current_session_code'];
             border: none;
             cursor: pointer;
         }
-
-        .submit-btn:hover 
-        {
+        .submit-btn:hover {
             background: #e06309;
         }
-
-        #quiz-list 
-        {
+        #quiz-list {
             margin-top: 32px;
             width: 100%;
             max-width: 600px;
         }
-
-        .quiz-item 
-        {
+        .quiz-item {
             background: #fff;
             border-radius: 12px;
             margin-bottom: 24px;
             box-shadow: 0 2px 6px rgba(0, 0, 0, .10);
             padding: 22px 18px;
         }
-
-        .option-btn 
-        {
+        .option-btn {
             background: #4285f4;
             color: #fff;
             font-size: 17px;
@@ -269,9 +208,7 @@ $sessionCode = $_SESSION['current_session_code'];
             cursor: pointer;
             min-width: 100px;
         }
-
-        .option-btn .count 
-        {
+        .option-btn .count {
             font-size: 15px;
             background: #fff;
             color: #4285f4;
@@ -279,149 +216,195 @@ $sessionCode = $_SESSION['current_session_code'];
             padding: 2px 10px;
             margin-left: 8px;
         }
-
-        .option-btn.selected 
-        {
+        .option-btn.selected {
             background: #333;
+        }
+        #attendee-list {
+            margin-top: 40px;
+            width: 100%;
+            max-width: 600px;
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,.1);
+        }
+        #attendee-list h3 {
+            margin-top: 0;
+            color: #2d4059;
+        }
+        #attendee-ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        #attendee-ul li {
+            padding: 8px 0;
+            border-bottom: 1px solid #eee;
+            font-size: 16px;
         }
     </style>
 </head>
 
 <body>
-    <div class="sidebar">
-        <div class="logo">
-            <img src="https://cdn.creazilla.com/emojis/49577/monkey-emoji-clipart-xl.png" width="55px" height="55px" class="logo-icon" style="margin-left: 7px;" />
-            <a href="anasayfa.php" class="logo-button">QuestionLive</a>
-            <span class="mod-label">Mod</span>
-        </div>
-        <div class="menu">
-            <table class="menu">
-                <tr>
-                    <td><a href="modChatwall.php">💬 Chat</a></td>
-                </tr>
-                <tr>
-                    <td><a href="modQuiz.php">❔ Quiz</a></td>
-                </tr>
-                <tr>
-                    <td><a href="createSession.php">🎓 Session</a></td>
-                </tr>
-            </table>
-        </div>
+<div class="sidebar">
+    <div class="logo">
+        <img src="https://cdn.creazilla.com/emojis/49577/monkey-emoji-clipart-xl.png" width="55" height="55" class="logo-icon" style="margin-left: 7px;">
+        <a href="anasayfa.php" class="logo-button">QuestionLive</a>
+        <span class="mod-label">Mod</span>
     </div>
-    <div class="main-container">
-        <h2>Quiz - Oturum: <?php echo htmlspecialchars($sessionCode); ?></h2>
-        <button id="add-question-btn">Soru Ekle</button>
-        <div id="select-type">
-            <label>
-                <input type="radio" name="question-type" value="coktan" checked> Çoktan Seçmeli
-            </label>
-            <label style="margin-left: 32px;">
-                <input type="radio" name="question-type" value="dogruyanlis"> Doğru / Yanlış
-            </label>
-            <br>
-            <button id="continue-btn" class="submit-btn" style="margin-top:25px; margin-left:70px">Devam Et</button>
-        </div>
-        <form id="question-form" enctype="multipart/form-data">
-            <div id="question-area"></div>
-            <button type="submit" class="submit-btn" style="margin-left:40px">Gönder</button>
-        </form>
-        <div id="quiz-list"></div>
+    <div class="menu">
+        <table class="menu">
+            <tr>
+                <td><a href="modChatwall.php">💬 Chat</a></td>
+            </tr>
+            <tr>
+                <td><a href="modQuiz.php">❔ Quiz</a></td>
+            </tr>
+            <tr>
+                <td><a href="createSession.php">🎓 Session</a></td>
+            </tr>
+        </table>
     </div>
-    <script>
-        const addBtn = document.getElementById('add-question-btn');
-        const selectType = document.getElementById('select-type');
-        const questionForm = document.getElementById('question-form');
-        const questionArea = document.getElementById('question-area');
-        let currentType = 'coktan';
+</div>
+<div class="main-container">
+    <h2>Quiz - Oturum: <?php echo htmlspecialchars($sessionCode); ?></h2>
+    <button id="add-question-btn">Soru Ekle</button>
+    <div id="select-type">
+        <label>
+            <input type="radio" name="question-type" value="coktan" checked> Çoktan Seçmeli
+        </label>
+        <label style="margin-left: 32px;">
+            <input type="radio" name="question-type" value="dogruyanlis"> Doğru / Yanlış
+        </label>
+        <br>
+        <button id="continue-btn" class="submit-btn" style="margin-top:25px; margin-left:70px">Devam Et</button>
+    </div>
+    <form id="question-form" enctype="multipart/form-data">
+        <div id="question-area"></div>
+        <button type="submit" class="submit-btn" style="margin-left:40px">Gönder</button>
+    </form>
+    <div id="quiz-list"></div>
+    <div id="attendee-list">
+        <h3>Oturuma Katılanlar</h3>
+        <ul id="attendee-ul"></ul>
+    </div>
+</div>
 
-        addBtn.onclick = function() 
-        {
-            addBtn.style.display = "none";
-            selectType.style.display = "block";
-        }
-        document.getElementById('continue-btn').onclick = function() 
-        {
-            selectType.style.display = "none";
-            questionForm.style.display = "block";
-            currentType = document.querySelector('input[name="question-type"]:checked').value;
-            showQuestionForm(currentType);
-        }
+<script>
+    const addBtn = document.getElementById('add-question-btn');
+    const selectType = document.getElementById('select-type');
+    const questionForm = document.getElementById('question-form');
+    const questionArea = document.getElementById('question-area');
+    let currentType = 'coktan';
 
-        function showQuestionForm(type) 
-        {
-            let html = `<textarea id="soru" placeholder="Soru yazınız..." required></textarea>`;
-            if (type === 'coktan') 
-            {
-                html += `
-        <div class="options-row"><input type="text" id="optA" placeholder="A şıkkı" required> <input type="radio" name="correct" value="A" class="answer-radio" checked>Doğru</div>
-        <div class="options-row"><input type="text" id="optB" placeholder="B şıkkı" required> <input type="radio" name="correct" value="B" class="answer-radio">Doğru</div>
-        <div class="options-row"><input type="text" id="optC" placeholder="C şıkkı"> <input type="radio" name="correct" value="C" class="answer-radio">Doğru</div>
-        <div class="options-row"><input type="text" id="optD" placeholder="D şıkkı"> <input type="radio" name="correct" value="D" class="answer-radio">Doğru</div>
-        `;
-            } 
-            else 
-            {
-                html += `<div class="options-row" style="margin-top:15px;">
-            <label><input type="radio" name="correct" value="dogru" checked> Doğru</label>
-            <label style="margin-left:40px;"><input type="radio" name="correct" value="yanlis"> Yanlış</label>
+    addBtn.onclick = function () {
+        addBtn.style.display = "none";
+        selectType.style.display = "block";
+    };
+
+    document.getElementById('continue-btn').onclick = function () {
+        selectType.style.display = "none";
+        questionForm.style.display = "block";
+        currentType = document.querySelector('input[name="question-type"]:checked').value;
+        showQuestionForm(currentType);
+    };
+
+    function showQuestionForm(type) {
+        let html = `<textarea id="soru" placeholder="Soru yazınız..." required></textarea>`;
+        if (type === 'coktan') {
+            html += `
+                <div class="options-row"><input type="text" id="optA" placeholder="A şıkkı" required> <input type="radio" name="correct" value="A" class="answer-radio" checked>Doğru</div>
+                <div class="options-row"><input type="text" id="optB" placeholder="B şıkkı" required> <input type="radio" name="correct" value="B" class="answer-radio">Doğru</div>
+                <div class="options-row"><input type="text" id="optC" placeholder="C şıkkı"> <input type="radio" name="correct" value="C" class="answer-radio">Doğru</div>
+                <div class="options-row"><input type="text" id="optD" placeholder="D şıkkı"> <input type="radio" name="correct" value="D" class="answer-radio">Doğru</div>`;
+        } else {
+            html += `
+                <div class="options-row" style="margin-top:15px;">
+                    <label><input type="radio" name="correct" value="dogru" checked> Doğru</label>
+                    <label style="margin-left:40px;"><input type="radio" name="correct" value="yanlis"> Yanlış</label>
+                </div>`;
+        }
+        html += `<div style="margin-top: 20px;">
+            <label>Resim / Video:</label><br>
+            <input type="file" id="media" accept="image/*,video/*">
         </div>`;
-            }
-            html += `<div style="margin-top: 20px;">
-                <label>Resim / Video:</label><br>
-                <input type="file" id="media" accept="image/*,video/*">
-             </div>`;
         questionArea.innerHTML = html;
+    }
+
+    questionForm.onsubmit = function (e) {
+        e.preventDefault();
+        let data = new FormData();
+        data.append('session_code', "<?php echo htmlspecialchars($sessionCode); ?>");
+        data.append('type', currentType);
+        data.append('question', document.getElementById('soru').value);
+        data.append('correct', document.querySelector('input[name="correct"]:checked').value);
+
+        let mediaFile = document.getElementById('media')?.files[0];
+        if (mediaFile) {
+            data.append('media', mediaFile);
         }
-        questionForm.onsubmit = function(e) 
-        {
-            e.preventDefault();
-            let data = new FormData();
-            data.append('session_code', "<?php echo htmlspecialchars($sessionCode); ?>");
-            data.append('type', currentType);
-            data.append('question', document.getElementById('soru').value);
-            data.append('correct', document.querySelector('input[name="correct"]:checked').value);
-            let mediaFile = document.getElementById('media')?.files[0];
-            if (mediaFile) {
-                data.append('media', mediaFile);
+
+        if (currentType === 'coktan') {
+            data.append('option1', document.getElementById('optA').value);
+            data.append('option2', document.getElementById('optB').value);
+            data.append('option3', document.getElementById('optC').value);
+            data.append('option4', document.getElementById('optD').value);
+        }
+
+        fetch('addQuiz.php', {
+            method: 'POST',
+            body: data
+        }).then(res => res.json())
+        .then(resp => {
+            if (resp.success) {
+                questionForm.style.display = "none";
+                addBtn.style.display = "block";
+                loadQuizList();
+            } else {
+                alert("Soru eklenemedi: " + (resp.message || ""));
             }
-            if (currentType === 'coktan') 
-            {
-                data.append('A', document.getElementById('optA').value);
-                data.append('B', document.getElementById('optB').value);
-                data.append('C', document.getElementById('optC').value);
-                data.append('D', document.getElementById('optD').value);
-            }
-            fetch('addQuiz.php', 
-            {
-                    method: 'POST',
-                    body: data
-                })
-                .then(res => res.json())
-                .then(resp => {
-                    if (resp.success) 
-                    {
-                        questionForm.style.display = "none";
-                        addBtn.style.display = "block";
-                        loadQuizList();
-                    } 
-                    else 
-                    {
-                        alert("Soru eklenemedi: " + (resp.message || ""));
+        });
+    };
+
+    function loadQuizList() {
+        fetch('loadQuizList.php?session_code=<?php echo htmlspecialchars($sessionCode); ?>&mod=1')
+            .then(res => res.text())
+            .then(html => {
+                document.getElementById('quiz-list').innerHTML = html;
+            });
+    }
+
+    function loadAttendees() {
+        fetch('getQuizAttendees.php?session_code=<?php echo htmlspecialchars($sessionCode); ?>')
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    let html = "";
+                    if (data.attendees.length > 0) {
+                        data.attendees.forEach(a => {
+                            let name = a.attendee_name;
+                            if (!name || name.trim() === "") {
+                                name = "Anonim Kullanıcı";
+                            }
+                            html += `<li><strong>${name}</strong> <span style="color:#777;font-size:0.9em;">(${a.joined_at})</span></li>`;
+                        });
+                    } else {
+                        html = "<li>Henüz kimse katılmadı.</li>";
                     }
-                });
-        };
+                    document.getElementById("attendee-ul").innerHTML = html;
+                }
+            });
+    }
 
-        function loadQuizList() 
-        {
-            fetch('loadQuizList.php?session_code=<?php echo htmlspecialchars($sessionCode); ?>&mod=1')
-                .then(res => res.text())
-                .then(html => {
-                    document.getElementById('quiz-list').innerHTML = html;
-                });
-        }
-        loadQuizList();
-        setInterval(loadQuizList, 3000);
-    </script>
+    loadQuizList();
+    loadAttendees();
+
+    setInterval(loadQuizList, 3000);
+    setInterval(loadAttendees, 3000);
+
+    setInterval(() => {
+        fetch('pingSession.php?session_code=<?php echo htmlspecialchars($sessionCode); ?>');
+    }, 3000);
+</script>
 </body>
-
 </html>
