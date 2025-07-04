@@ -146,7 +146,6 @@ $quizzes = [];
 
 while ($quiz = $quizRes->fetch_assoc()) 
 {
-    // Şıkları quiz_options tablosundan çek
     $stmt = $conn->prepare("
         SELECT option_key, option_text
         FROM quiz_options
@@ -268,17 +267,37 @@ const sessionCode = "<?php echo htmlspecialchars($code); ?>";
 const sessionId = "<?php echo htmlspecialchars($session_id); ?>";
 const tokenName = "attendee_token_" + sessionId;
 
-// Oturum sonlandırma kontrolü (ping)
-setInterval(() => {
-    fetch('pingSession.php?session_code=' + encodeURIComponent(sessionCode))
+// ➤ Oturum sonlandı mı kontrolü (ping)
+function checkSessionAlive() {
+    fetch('isQuizSessionAlive.php?session_code=' + encodeURIComponent(sessionCode))
         .then(response => response.json())
         .then(data => {
-            if (data.success && data.status === 'closed') {
-                alert("Bu oturum sonlandırıldı.");
-                window.location.href = 'endSession.php';
+            if (!data.alive) {
+                document.body.innerHTML = `
+                    <div style="
+                        display: flex;
+                        flex-direction: column;
+                        justify-content: center;
+                        align-items: center;
+                        height: 100vh;
+                        text-align: center;
+                    ">
+                        <h2 style="color: #c00; font-size: 28px; margin-bottom: 20px;">
+                            Oturum sonlandırıldı
+                        </h2>
+                        <p style="color: #555; font-size: 20px;">
+                            Ana sayfaya yönlendiriliyorsunuz...
+                        </p>
+                    </div>
+                `;
+                setTimeout(() => {
+                    window.location.href = 'anasayfa.php';
+                }, 3000);
             }
         });
-}, 3000);
+}
+
+setInterval(checkSessionAlive, 3000);
 
 document.getElementById('leave-session-btn').addEventListener('click', function() {
     if (confirm('Oturumdan ayrılmak istediğinize emin misiniz?')) {
@@ -290,7 +309,8 @@ document.getElementById('leave-session-btn').addEventListener('click', function(
         fetch('leaveSession.php', {
             method: 'POST',
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            body: 'session_id=' + encodeURIComponent(sessionId) + '&token=' + encodeURIComponent(tokenValue || "")
+            body: 'session_id=' + encodeURIComponent(sessionId) +
+                  '&token=' + encodeURIComponent(tokenValue || "")
         })
         .then(r => r.json())
         .then(data => {
@@ -302,6 +322,3 @@ document.getElementById('leave-session-btn').addEventListener('click', function(
     }
 });
 </script>
-
-</body>
-</html>

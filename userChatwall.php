@@ -2,7 +2,6 @@
 session_start();
 require_once("connection.php");
 
-
 $code = $_GET['code'] ?? null;
 if (!$code) {
     die("Oturum kodu eksik.");
@@ -69,8 +68,7 @@ if (!$token) {
     <meta charset="UTF-8">
     <title>Chatwall</title>
     <style>
-        body 
-        {
+        body {
             font-family: Arial, sans-serif;
             background: #faebd7;
             margin: 0;
@@ -78,8 +76,7 @@ if (!$token) {
             display: flex;
             min-height: 100vh;
         }
-        .main-container 
-        {
+        .main-container {
             flex-grow: 1;
             padding: 40px;
             display: flex;
@@ -88,13 +85,11 @@ if (!$token) {
             justify-content: center;
             width: 100vw;
         }
-        h2 
-        {
+        h2 {
             text-align: center;
             margin-bottom: 20px;
         }
-        #leave-session-btn 
-        {
+        #leave-session-btn {
             background-color: #d9534f;
             color: white;
             border: none;
@@ -104,24 +99,20 @@ if (!$token) {
             margin-bottom: 20px;
             font-size: 16px;
         }
-        #leave-session-btn:hover 
-        {
+        #leave-session-btn:hover {
             background-color: #c9302c;
         }
-        #username-select-form 
-        {
+        #username-select-form {
             display: flex;
             gap: 12px;
             margin-bottom: 30px;
         }
-        #username-input 
-        {
+        #username-input {
             padding: 10px;
             font-size: 16px;
             width: 200px;
         }
-        #set-username-btn 
-        {
+        #set-username-btn {
             padding: 10px 25px;
             background-color: #007bff;
             color: white;
@@ -130,28 +121,24 @@ if (!$token) {
             font-size: 16px;
             cursor: pointer;
         }
-        #set-username-btn:disabled 
-        {
+        #set-username-btn:disabled {
             opacity: 0.5;
             cursor: not-allowed;
         }
-        #username-locked-msg 
-        {
+        #username-locked-msg {
             display: none;
             margin-bottom: 22px;
             color: #333;
             font-weight: bold;
         }
-        #chat-container 
-        {
+        #chat-container {
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             width: 100%;
         }
-        #chat-box 
-        {
+        #chat-box {
             width: 70%;
             height: 500px;
             border: 2px solid #ccc;
@@ -161,32 +148,27 @@ if (!$token) {
             margin-bottom: 20px;
             border-radius: 5px;
         }
-        .message 
-        {
+        .message {
             margin-bottom: 10px;
             display: flex;
             align-items: center;
             justify-content: flex-start;
         }
-        #chat-form 
-        {
+        #chat-form {
             display: none;
             justify-content: center;
             gap: 15px;
             width: 65%;
             margin-bottom: 100px;
         }
-        #chat-form input, #chat-form button 
-        {
+        #chat-form input, #chat-form button {
             padding: 10px;
             font-size: 16px;
         }
-        #chat-form input 
-        {
+        #chat-form input {
             width: 70%;
         }
-        #chat-form button 
-        {
+        #chat-form button {
             width: 25%;
             background-color: #5cb85c;
             color: white;
@@ -194,18 +176,15 @@ if (!$token) {
             border-radius: 6px;
             cursor: pointer;
         }
-        #chat-form button:hover 
-        {
+        #chat-form button:hover {
             background-color: #4cae4c;
         }
-        .star 
-        {
+        .star {
             color: #e53935;
             font-size: 18px;
             margin-left: 5px;
         }
-        .disabled 
-        {
+        .disabled {
             background-color: #ddd !important;
             cursor: not-allowed !important;
         }
@@ -230,14 +209,12 @@ if (!$token) {
     </div>
     <script>
         const sessionId = "<?php echo htmlspecialchars($sessionId); ?>";
+        const sessionCode = "<?php echo htmlspecialchars($sessionCode); ?>";
         const usernameKey = "cw_username_" + sessionId;
         const leaveBtn = document.getElementById('leave-session-btn');
 
-        leaveBtn.addEventListener('click', function() 
-        {
-            if (confirm('Oturumdan ayrılmak istediğinize emin misiniz?')) 
-            {
-                // Token'ı cookie'den al
+        leaveBtn.addEventListener('click', function() {
+            if (confirm('Oturumdan ayrılmak istediğinize emin misiniz?')) {
                 const tokenName = "attendee_token_" + sessionId;
                 let tokenValue = null;
 
@@ -267,26 +244,21 @@ if (!$token) {
             }
         });
 
-        window.addEventListener('DOMContentLoaded', function() 
-        {
+        window.addEventListener('DOMContentLoaded', function() {
             let uname = localStorage.getItem(usernameKey);
-            if (uname) 
-            {
+            if (uname) {
                 lockUsername(uname);
             }
         });
 
-        document.getElementById('username-select-form').addEventListener('submit', function(e) 
-        {
+        document.getElementById('username-select-form').addEventListener('submit', function(e) {
             e.preventDefault();
             let uname = document.getElementById('username-input').value.trim();
-            if (!uname || /mod|admin|yönetici|★/i.test(uname)) 
-            {
+            if (!uname || /mod|admin|yönetici|★/i.test(uname)) {
                 alert("Bu ismi kullanamazsınız!");
                 return;
             }
-            if (uname.length < 2 || uname.length > 32) 
-            {
+            if (uname.length < 2 || uname.length > 32) {
                 alert("Adınız 2-32 karakter arası olmalı!");
                 return;
             }
@@ -304,8 +276,7 @@ if (!$token) {
             });
         });
 
-        function lockUsername(uname) 
-        {
+        function lockUsername(uname) {
             document.getElementById('username-select-form').style.display = "none";
             document.getElementById('username-locked-msg').style.display = "block";
             document.getElementById('username-locked-msg').innerText = "Kullanıcı adınız: " + uname;
@@ -315,8 +286,7 @@ if (!$token) {
         function loadMessages() {
             fetch('loadUserMessages.php?session_id=' + sessionId)
                 .then(res => res.text())
-                .then(data => 
-                {
+                .then(data => {
                     const box = document.getElementById('chat-box');
                     box.innerHTML = data;
                     box.scrollTop = box.scrollHeight;
@@ -325,50 +295,67 @@ if (!$token) {
         loadMessages();
         setInterval(loadMessages, 3000);
 
-        document.getElementById('chat-form').addEventListener('submit', function(e) 
-        {
+        document.getElementById('chat-form').addEventListener('submit', function(e) {
             e.preventDefault();
             let uname = localStorage.getItem(usernameKey);
-            if (!uname) 
-            {
+            if (!uname) {
                 alert("Önce adınızı seçmelisiniz!");
                 return;
             }
             let msg = document.getElementById('message').value.trim();
             if (!msg) return;
 
-            fetch('sendUserMessage.php', 
-            {
+            fetch('sendUserMessage.php', {
                 method: 'POST',
-                headers: 
-                { 
-                    'Content-Type': 'application/x-www-form-urlencoded' 
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
                 },
                 body: 'session_id=' + encodeURIComponent(sessionId) +
                       '&user_name=' + encodeURIComponent(uname) +
                       '&message=' + encodeURIComponent(msg)
-            }).then(() => 
-            {
+            }).then(() => {
                 document.getElementById('message').value = '';
                 loadMessages();
             });
         });
-        function checkSessionAlive() 
-        {
-            fetch('isSessionAlive.php?code=<?php echo htmlspecialchars($sessionCode); ?>')
+
+        function checkSessionAlive() {
+            fetch('isSessionAlive.php?code=' + encodeURIComponent(sessionCode))
             .then(r => r.json())
             .then(data => {
-                if (!data.exists) 
-                {
-                    document.body.innerHTML = `
-                        <div style="text-align:center;padding:120px;font-size:2rem;color:#c00;">
-                          Oturum sonlandırıldı. Ana sayfaya yönlendiriliyorsunuz...
-                        </div>`;
-                    setTimeout(function() 
-                    {
+                if (!data.exists) {
+                  document.body.innerHTML = `
+    <div style="
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        flex-direction: column;
+        background: #faebd7;
+        text-align: center;
+        padding: 20px;
+        box-sizing: border-box;
+    ">
+        <div style="
+            max-width: 600px;
+            margin: 0 auto;
+            padding-left: 40px;
+            padding-right: 40px;
+        ">
+            <h2 style="color: #c00; font-size: 32px; margin-bottom: 20px;">
+                Oturum Sonlandırıldı
+            </h2>
+            <p style="color: #333; font-size: 20px;">
+                Ana sayfaya yönlendiriliyorsunuz...
+            </p>
+        </div>
+    </div>
+`;
+
+
+                    setTimeout(() => {
                         window.location.href = 'anasayfa.php';
-                    }
-                    , 3000);
+                    }, 3000);
                 }
             });
         }
