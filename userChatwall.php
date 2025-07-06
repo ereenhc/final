@@ -28,20 +28,26 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["user_name"])) {
     $attendeeName = $_POST["user_name"];
     $_SESSION["attendee_name"] = $attendeeName;
 }
-
 // Boşsa anonim ata
 if (!$attendeeName) {
     $attendeeName = "Anonim";
 }
 
+// Katılımcı sayısı çek
+$stmt = $conn->prepare("SELECT COUNT(*) as cnt FROM session_attendees WHERE session_id = ?");
+$stmt->bind_param("i", $sessionId);
+$stmt->execute();
+$res = $stmt->get_result();
+$row = $res->fetch_assoc();
+$stmt->close();
+$attendeeCount = $row['cnt'] ?? 0;
+
 // Cookie token kontrolü
 $tokenName = "attendee_token_$sessionId";
 $token = $_COOKIE[$tokenName] ?? null;
-
 if (!$token) {
     $token = bin2hex(random_bytes(16));
     setcookie($tokenName, $token, time() + 86400, "/");
-
     // Yeni kayıt
     $stmt2 = $conn->prepare("
         INSERT IGNORE INTO session_attendees (session_id, attendee_token, attendee_name, joined_at)
@@ -73,22 +79,97 @@ if (!$token) {
             background: #faebd7;
             margin: 0;
             padding: 0;
-            display: flex;
             min-height: 100vh;
+            display: flex;
+        }
+        .sidebar {
+            width: 340px;
+            background: linear-gradient(140deg, #3482c8 80%, #57e8ec 120%);
+            box-shadow: 2px 0 7px 0 rgba(49,66,120,.05);
+            min-height: 100vh;
+            color: #fff;
+            padding: 40px 24px;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 28px;
+        }
+        .sidebar-logo {
+            display: flex;
+            align-items: center;
+            font-size: 28px;
+            font-weight: bold;
+            margin-bottom: 60px;
+            color: #fff;
+            gap: 12px;
+        }
+        .sidebar-logo img {
+            width: 55px;
+            height: 55px;
+            border-radius: 14px;
+            background: #fff;
+        }
+        .menu {
+            width: 100%;
+            margin-top: 20px;
+            flex-direction: column;
+        }
+        .menu a {
+            font-size: 25px;
+            padding: 13px 18px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-radius: 11px;
+            text-decoration: none;
+            font-weight: bold;
+            color: #fff;
+            margin-bottom: 15px;
+            transition: background .22s;
+            border: 2.5px solid #e5e6ea;
+        }
+        .menu a.active,
+        .menu a:hover {
+            background: #fff;
+            color: #276bb7;
+            border-color: #9fd7fa;
+        }
+        @media (max-width: 900px) {
+            .sidebar {
+                width: 100px;
+                padding: 14px 7px;
+            }
+            .sidebar-logo {
+                font-size: 14px;
+            }
+            .menu a {
+                font-size: 15px;
+                padding: 7px;
+            }
         }
         .main-container {
             flex-grow: 1;
-            padding: 40px;
+            padding: 50px 0 0 0;
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
-            width: 100vw;
+            min-height: 100vh;
         }
-        h2 {
-            text-align: center;
-            margin-bottom: 20px;
+        .session-info {
+            background: #fff;
+            border-radius: 13px;
+            box-shadow: 0 2px 6px #bbb4;
+            padding: 20px 45px;
+            margin-bottom: 34px;
+            font-size: 19px;
+            color: #22344a;
+            font-weight: 500;
+            display: flex;
+            gap: 44px;
+            align-items: center;
         }
+        h2 { color: #2d4059; }
         #leave-session-btn {
             background-color: #d9534f;
             color: white;
@@ -179,20 +260,27 @@ if (!$token) {
         #chat-form button:hover {
             background-color: #4cae4c;
         }
-        .star {
-            color: #e53935;
-            font-size: 18px;
-            margin-left: 5px;
-        }
-        .disabled {
-            background-color: #ddd !important;
-            cursor: not-allowed !important;
-        }
     </style>
 </head>
 <body>
+    <div class="sidebar">
+        <div class="sidebar-logo">
+            <img src="https://cdn.creazilla.com/emojis/49577/monkey-emoji-clipart-xl.png" />
+            QuestionLive
+        </div>
+        <div class="menu">
+            <a href="userChatwall.php?code=<?php echo urlencode($sessionCode); ?>" class="active">💬 Chat</a>
+            <a href="userQuiz.php?code=<?php echo urlencode($sessionCode); ?>">❔ Quiz</a>
+            <a href="joinSession.php?code=<?php echo urlencode($sessionCode); ?>">🎓 Session</a>
+        </div>
+    </div>
     <div class="main-container">
-        <h2>Chatwall - Oturum: <?php echo htmlspecialchars($sessionCode); ?></h2>
+        <div class="session-info">
+            <div><b>Oturum Kodu:</b> <?php echo htmlspecialchars($sessionCode); ?></div>
+            <div><b>Katılımcı Sayısı:</b> <?php echo $attendeeCount; ?></div>
+            <div><b>Kullanıcı Adı:</b> <?php echo htmlspecialchars($attendeeName); ?></div>
+        </div>
+        <h2>Chatwall</h2>
         <button id="leave-session-btn">Oturumdan Ayrıl</button>
         <form id="username-select-form" autocomplete="off">
             <input type="text" id="username-input" maxlength="32" placeholder="Adınızı girin..." required>
@@ -212,19 +300,16 @@ if (!$token) {
         const sessionCode = "<?php echo htmlspecialchars($sessionCode); ?>";
         const usernameKey = "cw_username_" + sessionId;
         const leaveBtn = document.getElementById('leave-session-btn');
-
         leaveBtn.addEventListener('click', function() {
             if (confirm('Oturumdan ayrılmak istediğinize emin misiniz?')) {
                 const tokenName = "attendee_token_" + sessionId;
                 let tokenValue = null;
-
                 document.cookie.split(";").forEach(c => {
                     const [name, value] = c.trim().split("=");
                     if (name === tokenName) {
                         tokenValue = value;
                     }
                 });
-
                 fetch('leaveSession.php', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -243,14 +328,10 @@ if (!$token) {
                 });
             }
         });
-
         window.addEventListener('DOMContentLoaded', function() {
             let uname = localStorage.getItem(usernameKey);
-            if (uname) {
-                lockUsername(uname);
-            }
+            if (uname) lockUsername(uname);
         });
-
         document.getElementById('username-select-form').addEventListener('submit', function(e) {
             e.preventDefault();
             let uname = document.getElementById('username-input').value.trim();
@@ -263,26 +344,21 @@ if (!$token) {
                 return;
             }
             localStorage.setItem(usernameKey, uname);
-
             fetch(location.href, {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                },
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                 body: 'user_name=' + encodeURIComponent(uname)
             }).then(() => {
                 lockUsername(uname);
                 location.reload();
             });
         });
-
         function lockUsername(uname) {
             document.getElementById('username-select-form').style.display = "none";
             document.getElementById('username-locked-msg').style.display = "block";
             document.getElementById('username-locked-msg').innerText = "Kullanıcı adınız: " + uname;
             document.getElementById('chat-form').style.display = "flex";
         }
-
         function loadMessages() {
             fetch('loadUserMessages.php?session_id=' + sessionId)
                 .then(res => res.text())
@@ -294,7 +370,6 @@ if (!$token) {
         }
         loadMessages();
         setInterval(loadMessages, 3000);
-
         document.getElementById('chat-form').addEventListener('submit', function(e) {
             e.preventDefault();
             let uname = localStorage.getItem(usernameKey);
@@ -304,12 +379,9 @@ if (!$token) {
             }
             let msg = document.getElementById('message').value.trim();
             if (!msg) return;
-
             fetch('sendUserMessage.php', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                },
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                 body: 'session_id=' + encodeURIComponent(sessionId) +
                       '&user_name=' + encodeURIComponent(uname) +
                       '&message=' + encodeURIComponent(msg)
@@ -318,7 +390,6 @@ if (!$token) {
                 loadMessages();
             });
         });
-
         function checkSessionAlive() {
             fetch('isSessionAlive.php?code=' + encodeURIComponent(sessionCode))
             .then(r => r.json())
@@ -351,8 +422,6 @@ if (!$token) {
         </div>
     </div>
 `;
-
-
                     setTimeout(() => {
                         window.location.href = 'anasayfa.php';
                     }, 3000);

@@ -20,7 +20,7 @@ if ($session_code) {
     if ($sessionRow) {
         $sessionId = $sessionRow["id"];
 
-        // katılımcıları çek
+        // katılımcıları çek (anonimleri filtrele!)
         $stmt = $conn->prepare("
             SELECT 
                 sa.attendee_token,
@@ -29,6 +29,7 @@ if ($session_code) {
             FROM session_attendees sa
             LEFT JOIN uyeler u ON u.uye_id = sa.uye_id
             WHERE sa.session_id = ?
+              AND (COALESCE(u.uye_adi, sa.attendee_name) IS NOT NULL AND COALESCE(u.uye_adi, sa.attendee_name) <> '')
         ");
         $stmt->bind_param("i", $sessionId);
         $stmt->execute();

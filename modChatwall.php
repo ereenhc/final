@@ -90,80 +90,55 @@ if ($uyeId !== null) {
             min-height: 100vh;
         }
         .sidebar {
-            width: 390px;
-            background-color: rgb(61, 131, 184);
-            border-right: 1px solid #ddd;
-            padding: 30px 15px;
-            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.05);
-            height: 100vh;
+            width: 300px;
+            background-color: #3d83b8;
+            color: #fff;
+            padding: 25px 15px;
+            box-sizing: border-box;
             display: flex;
             flex-direction: column;
-            align-items: flex-start;
+            justify-content: flex-start;
         }
         .logo {
             display: flex;
             align-items: center;
-            font-size: 30px;
-            font-weight: bold;
-            color: #f47c2c;
-            margin-bottom: 60px;
+            margin-bottom: 40px;
         }
-        .logo-icon {
-            font-size: 35px;
-            margin-right: 5px;
-            line-height: 1;
-        }
-        .logo-button {
-            display: inline-block;
-            background-color: rgba(244, 124, 44, 0.82);
-            color: whitesmoke;
-            padding: 5px 10px;
-            margin-left: 10px;
-            text-decoration: none;
-            border-radius: 5px;
-            font-weight: bold;
-            transition: background-color 0.3s;
-            font-size: 28px;
-        }
-        .logo-button:hover {
-            background-color: rgb(0, 62, 71);
+        .logo img {
+            margin-right: 10px;
         }
         .mod-label {
-            color: #14234B;
+            background: #fff;
+            color: #3d83b8;
+            padding: 3px 10px;
+            border-radius: 5px;
+            margin-left: 10px;
+            font-size: 14px;
             font-weight: bold;
-            font-size: 1em;
-            margin-left: 16px;
-            background: #d6e4ff;
-            padding: 4px 14px;
-            border-radius: 8px;
-            letter-spacing: 1px;
         }
-        .menu {
-            width: 100%;
-            border-collapse: collapse;
+        .nav-menu {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
         }
-        .menu td {
-            padding: 10px;
-        }
-        .menu a {
-            font-size: 30px;
-            padding: 18px;
+        .nav-item {
             display: flex;
             align-items: center;
-            gap: 10px;
-            border: 3px solid #ccc;
-            border-radius: 10px;
-            background: #fff;
-            box-shadow: 0 2px 6px rgba(0, 0, 0, .25);
-            box-sizing: border-box;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 12px 16px;
             text-decoration: none;
+            color: #fff;
             font-weight: bold;
-            color: #007BFF;
-            transition: background .2s, box-shadow .2s;
+            border-radius: 6px;
+            transition: background 0.3s;
+            font-size: 18px;
         }
-        .menu a:hover {
-            background: #e0e0e0;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, .35);
+        .nav-item:hover {
+            background: rgba(255, 255, 255, 0.4);
+        }
+        .nav-emoji {
+            margin-right: 10px;
+            font-size: 22px;
         }
         .main-container {
             flex-grow: 1;
@@ -238,7 +213,7 @@ if ($uyeId !== null) {
         #chat-form button:hover {
             background-color: #4cae4c;
         }
-        /* İnce scrollbar */
+        /* Scrollbar */
         ::-webkit-scrollbar {
             width: 6px;
             height: 6px;
@@ -250,46 +225,48 @@ if ($uyeId !== null) {
         ::-webkit-scrollbar-track {
             background: transparent;
         }
-        /* Firefox scrollbar */
         * {
             scrollbar-width: thin;
             scrollbar-color: rgba(0, 0, 0, 0.3) transparent;
         }
         @media (max-width: 900px) {
             .sidebar {
-                width: 160px;
-                padding: 15px 7px;
+                width: 180px;
+                padding: 15px 8px;
             }
-            .logo-button {
-                font-size: 18px;
+            .nav-item {
+                font-size: 14px;
+                padding: 10px 12px;
             }
-            .mod-label {
-                font-size: .92em;
-                padding: 3px 8px;
-                margin-left: 8px;
+            .logo img {
+                width: 40px;
+                height: 40px;
             }
-            .menu a {
-                font-size: 18px;
-                padding: 10px;
+            .logo span {
+                font-size: 16px;
             }
         }
     </style>
 </head>
 <body>
+    <!-- SIDEBAR -->
     <div class="sidebar">
         <div class="logo">
-            <img src="https://cdn.creazilla.com/emojis/49577/monkey-emoji-clipart-xl.png" width="55px" height="55px" class="logo-icon" style="margin-left: 7px;" />
-            <a href="anasayfa.php" class="logo-button">QuestionLive</a>
+            <img src="https://cdn.creazilla.com/emojis/49577/monkey-emoji-clipart-xl.png" width="60" height="60" class="logo-icon" style="margin-left: 7px;" />
+            <span style="font-size:20px;font-weight:500;margin-left:10px;letter-spacing:0.5px;color:#fff;">QuestionLive</span>
             <span class="mod-label">Mod</span>
         </div>
-        <div class="menu">
-            <table class="menu">
-                <tr><td><a href="modChatwall.php">💬 Chat</a></td></tr>
-                <tr><td><a href="modQuiz.php">❔ Quiz</a></td></tr>
-                <tr><td><a href="createSession.php">🎓 Session</a></td></tr>
-            </table>
-        </div>
+        <nav class="nav-menu">
+            <a href="modChatwall.php" class="nav-item"><span class="nav-emoji">💬</span> Chat</a>
+            <a href="modQuiz.php" class="nav-item"><span class="nav-emoji">❔</span> Quiz</a>
+            <a href="createSession.php" class="nav-item"><span class="nav-emoji">🎓</span> Session</a>
+            <?php if(!empty($sessionCode)): ?>
+                <a href="quizResult.php?code=<?=urlencode($sessionCode)?>" class="nav-item"><span class="nav-emoji">🏆</span> Quiz Result</a>
+            <?php endif; ?>
+        </nav>
     </div>
+
+    <!-- MAIN -->
     <div class="main-container">
         <h2>Chat - Oturum: <?php echo htmlspecialchars($sessionCode); ?></h2>
 
